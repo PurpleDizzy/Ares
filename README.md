@@ -1,4 +1,4 @@
-Ares
+Codename: Ares
 ====
 
 A Garrysmod Gamemode
