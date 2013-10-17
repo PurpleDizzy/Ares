@@ -17,7 +17,7 @@ SWEP.Category           = "Ares"
 SWEP.Spawnable          = false
 SWEP.AdminSpawnable     = false
 
-//SWEP.IsSilent = false -- Is a suppressed weapon or kills silently
+//SWEP.IsSilent = false -- kills silently. Not used yet, maybe later?
 
 SWEP.IsGrenade = false
 
@@ -45,10 +45,10 @@ SWEP.Secondary.Automatic    = false
 SWEP.Secondary.Ammo         = "none"
 SWEP.Secondary.ClipMax      = -1
 
-SWEP.HeadshotMultiplier = 2.7
+SWEP.HeadshotMultiplier = 2.7 -- haven't modified
 
-SWEP.StoredAmmo = 0
-SWEP.IsDropped = false
+//SWEP.StoredAmmo = 0	-- Taken from ttt. Might not be used but just in case.
+//SWEP.IsDropped = false  -- ^ Used to save ammo in gun when ply drops
 
 SWEP.DeploySpeed = 1.4
 
@@ -58,7 +58,7 @@ SWEP.IronSightsAng 		= Vector( 0, 0, 0 )
 SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
 SWEP.ReloadAnim = ACT_VM_RELOAD
 
--- Shooting functions largely copied from weapon_cs_base
+
 function SWEP:PrimaryAttack()
 
    if not self:CanPrimaryAttack() then return end
@@ -155,7 +155,7 @@ function SWEP:Ammo1()
 end
 
 function SWEP:GetSlot()
-	return self.Slot
+	return self.Slot -- used so the game knows not to pick up gun of same kind
 end
 
 function SWEP:IronSights()
@@ -166,6 +166,8 @@ function SWEP:IronSights()
 	end
 
 end
+
+-- Can't get ironsights to work properly since we need to fuck with bones and animations.
 
 function SWEP:GetViewModelPosition(pos, ang)
 	if not bIronSights then return pos, ang end
