@@ -59,6 +59,10 @@ SWEP.IronSightsAng 		= Vector( 0, 0, 0 )
 SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
 SWEP.ReloadAnim = ACT_VM_RELOAD
 
+function SWEP:GetSlot()
+	return self.Slot -- used so the game knows not to pick up gun of same kind
+end
+
 
 function SWEP:SecondaryAttack()
 
