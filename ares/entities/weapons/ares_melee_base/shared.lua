@@ -59,125 +59,105 @@ SWEP.IronSightsAng 		= Vector( 0, 0, 0 )
 SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
 SWEP.ReloadAnim = ACT_VM_RELOAD
 
--- Shooting functions largely copied from weapon_cs_base
-function SWEP:PrimaryAttack()
-
-
-
-end
-
-function SWEP:SecondaryAttack()
-	self:IronSights()
-end
-
-function SWEP:ShootBullet( dmg, recoil, numbul, cone )
-
-   self.Weapon:SendWeaponAnim(self.PrimaryAnim)
-
-   self.Owner:MuzzleFlash()
-   self.Owner:SetAnimation( PLAYER_ATTACK1 )
-
-   if not IsFirstTimePredicted() then return end
-
-   numbul = numbul or 1
-   cone   = cone   or 0.01
-
-   local bullet = {}
-   bullet.Num    = numbul
-   bullet.Src    = self.Owner:GetShootPos()
-   bullet.Dir    = self.Owner:GetAimVector()
-   bullet.Spread = Vector( cone, cone, 0 )
-   bullet.Tracer = 4
-   bullet.TracerName = self.Tracer or "Tracer"
-   bullet.Force  = 10
-   bullet.Damage = dmg
-
-   self.Owner:FireBullets( bullet )
-
-   -- Owner can die after firebullets
-   if (not IsValid(self.Owner)) or (not self.Owner:Alive()) or self.Owner:IsNPC() then return end
-
-
-
-end
 
 function SWEP:SecondaryAttack()
 
 end
 
-function SWEP:DryFire(setnext)
-   if CLIENT and LocalPlayer() == self.Owner then
-      self:EmitSound( "Weapon_Pistol.Empty" )
-   end
-
-   setnext(self, CurTime() + 0.2)
-
-   self:Reload()
-end
 
 function SWEP:CanPrimaryAttack()
    if not IsValid(self.Owner) then return end
 
-   if self.Weapon:Clip1() <= 0 then
-      self:DryFire(self.SetNextPrimaryFire)
-      return false
-   end
+
    return true
 end
 
 function SWEP:Initialize()
-   if CLIENT and self.Weapon:Clip1() == -1 then
-      self.Weapon:SetClip1(self.Primary.DefaultClip)
-   end
 
    self:SetDeploySpeed(self.DeploySpeed)
 
    -- compat for gmod update
    if self.SetWeaponHoldType then
-      self:SetWeaponHoldType(self.HoldType or "pistol")
+      self:SetWeaponHoldType(self.HoldType or "knife")
    end
    
    bIronSights = false
    
 end
 
-function SWEP:GetHeadshotMultiplier(victim, dmginfo)
-   return self.HeadshotMultiplier
-end
+function SWEP:PrimaryAttack()
+   self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
-function SWEP:Ammo1()
-   return IsValid(self.Owner) and self.Owner:GetAmmoCount(self.Primary.Ammo) or false
-end
+   if not IsValid(self.Owner) then return end
 
-function SWEP:GetSlot()
-	return self.Slot
-end
+   if self.Owner.LagCompensation then -- for some reason not always true
+      self.Owner:LagCompensation(true)
+   end
 
-function SWEP:IronSights()
-	if self.Owner:KeyDown(IN_ATTACK2) then
-		bIronSights = true
-	else
-		bIronSights = false
-	end
+   local spos = self.Owner:GetShootPos()
+   local sdest = spos + (self.Owner:GetAimVector() * 70)
 
-end
+   local tr_main = util.TraceLine({start=spos, endpos=sdest, filter=self.Owner, mask=MASK_SHOT_HULL})
+   local hitEnt = tr_main.Entity
+   
+        self.Weapon:EmitSound(self.Primary.Sound)
+        
+   if IsValid(hitEnt) or tr_main.HitWorld then
+      self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
 
-function SWEP:GetViewModelPosition(pos, ang)
-	if not bIronSights then return pos, ang end
-	
-	local mul = 1.0
-	
-	if self.IronSightsAng then
-      ang = ang * 1
-      ang:RotateAroundAxis( ang:Right(),    self.IronSightsAng.x * mul )
-      ang:RotateAroundAxis( ang:Up(),       self.IronSightsAng.y * mul )
-      ang:RotateAroundAxis( ang:Forward(),  self.IronSightsAng.z * mul )
-    end
+      if not (CLIENT and (not IsFirstTimePredicted())) then
+         local edata = EffectData()
+         edata:SetStart(spos)
+         edata:SetOrigin(tr_main.HitPos)
+         edata:SetNormal(tr_main.Normal)
 
-	pos = pos + offset.x * ang:Right() * mul
-	pos = pos + offset.y * ang:Forward() * mul
-	pos = pos + offset.z * ang:Up() * mul
+         --edata:SetSurfaceProp(tr_main.MatType)
+         --edata:SetDamageType(DMG_CLUB)
+         edata:SetEntity(hitEnt)
 
-	return pos, ang
-	
+         if hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll" then
+            util.Effect("BloodImpact", edata)
+
+            self.Owner:LagCompensation(false)
+            self.Owner:FireBullets({Num=1, Src=spos, Dir=self.Owner:GetAimVector(), Spread=Vector(0,0,0), Tracer=0, Force=1, Damage=0})
+         end
+      end
+   else
+      self.Weapon:SendWeaponAnim( ACT_VM_MISSCENTER )
+   end
+
+
+   if SERVER then
+      -- Do another trace that sees nodraw stuff like func_button
+      local tr_all = nil
+      tr_all = util.TraceLine({start=spos, endpos=sdest, filter=self.Owner})
+      
+      self.Owner:SetAnimation( PLAYER_ATTACK1 )
+
+      if hitEnt and hitEnt:IsValid() then
+         if self:OpenEnt(hitEnt) == OPEN_NO and tr_all.Entity and tr_all.Entity:IsValid() then
+            -- See if there's a nodraw thing we should open
+            self:OpenEnt(tr_all.Entity)
+         end
+
+         local dmg = DamageInfo()
+         dmg:SetDamage(self.Primary.Damage)
+         dmg:SetAttacker(self.Owner)
+         dmg:SetInflictor(self.Weapon)
+         dmg:SetDamageForce(self.Owner:GetAimVector() * 1500)
+         dmg:SetDamagePosition(self.Owner:GetPos())
+         dmg:SetDamageType(DMG_CLUB)
+
+         hitEnt:DispatchTraceAttack(dmg, spos + (self.Owner:GetAimVector() * 3), sdest)
+      else
+         -- See if our nodraw trace got the goods
+         if tr_all.Entity and tr_all.Entity:IsValid() then
+            self:OpenEnt(tr_all.Entity)
+         end
+      end
+   end
+
+   if self.Owner.LagCompensation then
+      self.Owner:LagCompensation(false)
+   end
 end
