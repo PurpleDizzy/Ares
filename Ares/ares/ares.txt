@@ -1,0 +1,12 @@
+"ares"
+{
+	"base"		"base"
+	"title"		"CODENAME: ARES"
+	"maps"		""
+	"menusystem"	"1"
+
+	"settings"
+	{
+		// TODO: put some settings here
+	}
+}
