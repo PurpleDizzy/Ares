@@ -41,6 +41,8 @@ function GM:PlayerSpawn(ply)
 	ply:SetWalkSpeed(230)
 	ply:SetRunSpeed(300)
 	
+	ply:StripWeapons()
+	ply:StripAmmo()
 	self:PlayerLoadout(ply)
 end
 
