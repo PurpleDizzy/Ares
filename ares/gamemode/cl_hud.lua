@@ -87,6 +87,7 @@ end
 function DrawWEPBarAndText()
 	local ply = LocalPlayer()
 	local WEP = LocalPlayer():GetActiveWeapon()
+	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
 	local CLIP = LocalPlayer():GetActiveWeapon():Clip1()
 	local AMMO = LocalPlayer():GetAmmoCount(WEP:GetPrimaryAmmoType())
 	local MAXC = LocalPlayer():GetActiveWeapon():GetTable().Primary.ClipSize
@@ -95,8 +96,13 @@ function DrawWEPBarAndText()
 		surface.SetTextColor( 0, 0, 0, 255)
 		surface.SetTextPos ( ScrW() - 170, ScrH() - 99)
 		surface.SetFont( "WepFont" )
-		surface.DrawText( "Weapon" )
-	
+		surface.DrawText( WEPN )
+//	if WEPN == "Knife" then
+//	
+//	
+//	
+//	
+//end
 	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
 	if CLIP ~= 0 then
 		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color(100,100,100,255) )
