@@ -13,10 +13,19 @@ surface.CreateFont("HPFont", {font = "HUDNumber",
 surface.CreateFont("TeamFont", {font = "HUDNumber",
                                     size = 35,
                                     weight = 700})
+
+surface.CreateFont("AmmoCFont", {font = "HUDNumber",
+                                    size = 40,
+                                    weight = 700})
+									
+surface.CreateFont("WepFont", {font = "HUDNumber",
+                                    size = 35,
+                                    weight = 700})
 -- Main --
 function AresHud()
 	DrawHPBarAndText()
 	CheckTeam()
+	DrawWEPBarAndText()
 end	
 hook.Add( "HUDPaint", "AresHud", AresHud )
 
@@ -73,4 +82,36 @@ function DrawHPBarAndText()
 	surface.SetTextPos ( 20, ScrH() - 40)
 	surface.SetFont( "HPFont" )
 	surface.DrawText( "HP" )
+end
+
+function DrawWEPBarAndText()
+	local ply = LocalPlayer()
+	local WEP = LocalPlayer():GetActiveWeapon()
+	local CLIP = LocalPlayer():GetActiveWeapon():Clip1()
+	local AMMO = LocalPlayer():GetAmmoCount(WEP:GetPrimaryAmmoType())
+	local MAXC = LocalPlayer():GetActiveWeapon():GetTable().Primary.ClipSize
+	
+		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 100, 200, 40, Color( 100,100,100,100) )
+		surface.SetTextColor( 0, 0, 0, 255)
+		surface.SetTextPos ( ScrW() - 170, ScrH() - 99)
+		surface.SetFont( "WepFont" )
+		surface.DrawText( "Weapon" )
+	
+	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
+	if CLIP ~= 0 then
+		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color(100,100,100,255) )
+		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color( 225, 255, 255, 40) )
+	end
+	surface.SetTextColor( 0, 0, 0, 255)
+	surface.SetTextPos ( ScrW() - 150, ScrH() - 50)
+	surface.SetFont( "AmmoCFont" )
+	surface.DrawText( CLIP )
+	surface.SetTextColor( 0, 0, 0, 255)
+	surface.SetTextPos ( ScrW() - 100, ScrH() - 50)
+	surface.SetFont( "AmmoCFont" )
+	surface.DrawText( "/" )
+	surface.SetTextColor( 0, 0, 0, 255)
+	surface.SetTextPos ( ScrW() - 80, ScrH() - 50)
+	surface.SetFont( "AmmoCFont" )
+	surface.DrawText( AMMO )
 end
