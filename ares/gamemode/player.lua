@@ -15,6 +15,8 @@ function GM:PlayerInitialSpawn( ply )
 	if ( GAMEMODE.TeamBased ) then
 		ply:ConCommand( "gm_showteam" )
 	end
+	
+	ply:SetModel( "models/player/breen.mdl" )
 
 end
 
@@ -57,10 +59,16 @@ local function PlayerDropWeapon(ply)
 	end
 end
 
-hook.Add("DoPlayerDeath", "Player.DropWeapon", PlayerDropWeapon)
+local function DropAllWeapons(ply)
+	for k,v in pairs(ply:GetWeapons()) do
+		ply:DropWeapon(v)
+	end
+end
+
+hook.Add("DoPlayerDeath", "Player.DropAllWeapons", DropAllWeapons)
 
 concommand.Add("player_dropweapon", PlayerDropWeapon)
-concommand.Add( "player_dropweapon_toggle", ToggleDropWeapon)
+//concommand.Add( "player_dropweapon_toggle", ToggleDropWeapon)
 
 function GM:PlayerDeathSound()
 	-- Return true to not play the default sounds
@@ -88,3 +96,9 @@ function GM:PlayerCanPickupWeapon( ply, ent )
 	
 	return true
 end
+
+util.AddNetworkString( "weaponSelect" )
+
+net.Receive("weaponSelect", function(len, ply)
+	ply:SelectWeapon(net.ReadString())
+end)

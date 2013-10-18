@@ -31,6 +31,8 @@ end
    Desc: Player pressed a key (see IN enums)
 -----------------------------------------------------------]]
 function GM:KeyPress( ply, key )
+   if not IsFirstTimePredicted() then return end
+
 	if not IsValid(ply) then return end
 	if key == IN_ATTACK2 then
 		local wep = ply:GetActiveWeapon()
@@ -43,7 +45,9 @@ end
    Name: gamemode:KeyRelease( )
    Desc: Player released a key (see IN enums)
 -----------------------------------------------------------]]
-function GM:KeyRelease( player, key )
+function GM:KeyRelease( ply, key )
+   if not IsFirstTimePredicted() then return end
+
 	if not IsValid(ply) then return end
 	if key == IN_ATTACK2 then
 		local wep = ply:GetActiveWeapon()

@@ -12,7 +12,7 @@ if CLIENT then
    SWEP.CSMuzzleFlashes = true
 end
 
-SWEP.Base = "weapon_base"
+SWEP.Base = "ares_gun_base"
 
 SWEP.Category           = "Ares"
 SWEP.Spawnable          = false
@@ -25,9 +25,9 @@ SWEP.IsGrenade = false
 SWEP.Weight             = 5
 SWEP.AutoSwitchTo       = false
 SWEP.AutoSwitchFrom     = false
-SWEP.Slot = 2
+SWEP.Slot = 0
 
-SWEP.Primary.Sound          = Sound( "Weapon_Pistol.Empty" )
+SWEP.Primary.Sound          = Sound( "" )
 SWEP.Primary.Recoil         = 1.5
 SWEP.Primary.Damage         = 60
 SWEP.Primary.NumShots       = 1
@@ -50,6 +50,8 @@ SWEP.HeadshotMultiplier = 2.7
 
 SWEP.StoredAmmo = 0
 SWEP.IsDropped = false
+
+SWEP.UseSights = false
 
 SWEP.DeploySpeed = 1.4
 
@@ -84,8 +86,6 @@ function SWEP:Initialize()
    if self.SetWeaponHoldType then
       self:SetWeaponHoldType(self.HoldType or "knife")
    end
-   
-   bIronSights = false
    
 end
 
@@ -139,10 +139,6 @@ function SWEP:PrimaryAttack()
       self.Owner:SetAnimation( PLAYER_ATTACK1 )
 
       if hitEnt and hitEnt:IsValid() then
-         if self:OpenEnt(hitEnt) == OPEN_NO and tr_all.Entity and tr_all.Entity:IsValid() then
-            -- See if there's a nodraw thing we should open
-            self:OpenEnt(tr_all.Entity)
-         end
 
          local dmg = DamageInfo()
          dmg:SetDamage(self.Primary.Damage)

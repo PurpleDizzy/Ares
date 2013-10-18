@@ -18,7 +18,7 @@ SWEP.Spawnable          = false
 SWEP.AdminSpawnable     = false
 
 //SWEP.IsSilent = false -- kills silently. Not used yet, maybe later?
-
+SWEP.Type = "primary"
 SWEP.IsGrenade = false
 
 SWEP.Weight             = 5
@@ -112,7 +112,11 @@ end
 
 function SWEP:DryFire(setnext)
    if CLIENT and LocalPlayer() == self.Owner then
-      self:EmitSound( "Weapon_Pistol.Empty" )
+	  if self.Type == "primary" then
+		self:EmitSound( "Weapon_Rifle.Empty" )
+	  elseif self.Type == "secondary" then
+		self:EmitSound( "Weapon_Pistol.Empty" )
+	  end
    end
 
    setnext(self, CurTime() + 0.2)

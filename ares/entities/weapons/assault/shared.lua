@@ -28,6 +28,7 @@ SWEP.Primary.DefaultClip = 30
 SWEP.Primary.ClipMax = 60
 
 SWEP.ViewModel			= "models/weapons/v_rif_m4a1.mdl"
+SWEP.ViewModelFlip = true
 SWEP.WorldModel			= "models/weapons/w_rif_m4a1.mdl"
 
 SWEP.ViewModelFlip = true
