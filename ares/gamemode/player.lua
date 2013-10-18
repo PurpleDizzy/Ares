@@ -22,7 +22,10 @@ end
 
 function GM:PlayerLoadout(ply)
 	ply:Give("assault")
+	ply:Give("knife")
 	ply:GiveAmmo(999,"pistol")
+	
+	ply:SelectWeapon("assault")
 end
 
 function GM:PlayerSpawn(ply)
