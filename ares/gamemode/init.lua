@@ -10,11 +10,11 @@ AddCSLuaFile( "shared.lua" ) --Tell the server that the client needs to download
 AddCSLuaFile( "cl_keys.lua" ) --Tell the server that the client needs to download cl_keys.lua
 AddCSLuaFile( "sh_player.lua" ) --Tell the server that the client needs to download player_shd.lua
 
-AddCSLuaFile( "cl_hud.lua" )
+AddCSLuaFile( "cl_hud.lua" )	--Tell the server that the client needs to download cl_hud.lua
  
 include( 'shared.lua' ) --Tell the server to load shared.lua
-include( 'player.lua' )
-include( 'sh_player.lua' )
+include( 'player.lua' )	--Tell the server to load player.lua
+include( 'sh_player.lua' )	--Tell the server to load sh_player.lua
 
 
 --------------------------------------------------------------

@@ -25,7 +25,6 @@ surface.CreateFont("WepFont", {font = "HUDNumber",
 function AresHud()
 	DrawHPBarAndText()
 	CheckTeam()
-	DrawWEPBarAndText()
 end	
 hook.Add( "HUDPaint", "AresHud", AresHud )
 
@@ -33,9 +32,11 @@ function CheckTeam()
 	local Team = LocalPlayer():Team()
 	if Team == 1 then
 		RebelHUD()
+		DrawWEPBarAndText()
 	end
 	if Team == 2 then
 		ImperialHUD()
+		DrawWEPBarAndText()
 	end
 	if Team == 1002 then
 		SpecHUD()
@@ -88,26 +89,37 @@ function DrawWEPBarAndText()
 	local ply = LocalPlayer()
 	local WEP = LocalPlayer():GetActiveWeapon()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
+	local TYPE = LocalPlayer():GetActiveWeapon().Type
+//	local MAXC = LocalPlayer():GetActiveWeapon():GetTable().Primary.ClipSize
+if TYPE == "melee" then
+	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 100, 200, 40, Color( 100,100,100,100) )
+	surface.SetTextColor( 0, 0, 0, 255)
+	surface.SetTextPos ( ScrW() - 155, ScrH() - 99)
+	surface.SetFont( "WepFont" )
+	surface.DrawText( WEPN )
+	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
+	//if CLIP ~= 0 then
+	//	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color(100,100,100,255) )
+	//	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color( 225, 255, 255, 40) )
+	//end
+	surface.SetTextColor( 0, 0, 0, 255)
+	surface.SetTextPos ( ScrW() - 150, ScrH() - 50)
+	surface.SetFont( "AmmoCFont" )
+	surface.DrawText( "Melee" )
+end
+if TYPE == "primary" then
+	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 100, 200, 40, Color( 100,100,100,100) )
+	surface.SetTextColor( 0, 0, 0, 255)
+	surface.SetTextPos ( ScrW() - 155, ScrH() - 99)
+	surface.SetFont( "WepFont" )
+	surface.DrawText( WEPN )
 	local CLIP = LocalPlayer():GetActiveWeapon():Clip1()
 	local AMMO = LocalPlayer():GetAmmoCount(WEP:GetPrimaryAmmoType())
-	local MAXC = LocalPlayer():GetActiveWeapon():GetTable().Primary.ClipSize
-	
-		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 100, 200, 40, Color( 100,100,100,100) )
-		surface.SetTextColor( 0, 0, 0, 255)
-		surface.SetTextPos ( ScrW() - 170, ScrH() - 99)
-		surface.SetFont( "WepFont" )
-		surface.DrawText( WEPN )
-//	if WEPN == "Knife" then
-//	
-//	
-//	
-//	
-//end
 	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
-	if CLIP ~= 0 then
-		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color(100,100,100,255) )
-		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color( 225, 255, 255, 40) )
-	end
+	//if CLIP ~= 0 then
+	//	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color(100,100,100,255) )
+	//	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color( 225, 255, 255, 40) )
+	//end
 	surface.SetTextColor( 0, 0, 0, 255)
 	surface.SetTextPos ( ScrW() - 150, ScrH() - 50)
 	surface.SetFont( "AmmoCFont" )
@@ -120,4 +132,5 @@ function DrawWEPBarAndText()
 	surface.SetTextPos ( ScrW() - 80, ScrH() - 50)
 	surface.SetFont( "AmmoCFont" )
 	surface.DrawText( AMMO )
+end
 end
