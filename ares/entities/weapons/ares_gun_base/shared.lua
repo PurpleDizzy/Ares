@@ -106,7 +106,7 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:Holster(newgun)
-	self.Weapon:SetNextPrimaryFire(0)
+	self.Weapon:SetNextPrimaryFire(self.DeploySpeed)
 	return true
 end
 
