@@ -23,9 +23,28 @@ end
 function GM:PlayerLoadout(ply)
 	ply:Give("assault")
 	ply:Give("knife")
-	ply:GiveAmmo(999,"pistol")
+	AmmoSpawn(ply)
 	
 	ply:SelectWeapon("assault")
+end
+
+// -- Give proper ammo to each spawning player
+function AmmoSpawn(ply)
+	local amt = 1
+	for k,v in pairs(ply:GetWeapons()) do
+		if v:GetType() == "primary" then
+			amt = 4
+		elseif v:GetType() == "secondary" then
+			amt = 3
+		end
+		
+		if v:GetAmmo() == "none" or v:GetAmmo() == nil then return end
+		
+		local ammoname, defclip = v:GetAmmo()
+		
+		ply:GiveAmmo( amt * defclip, ammoname)
+		
+	end
 end
 
 

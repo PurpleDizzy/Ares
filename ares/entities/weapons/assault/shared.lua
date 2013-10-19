@@ -10,6 +10,8 @@ SWEP.Slot				= 2
 
 --SWEP.Icon = "VGUI/ttt/icon_m16"
 
+SWEP.Type = "primary"
+
 
 SWEP.Base				= "ares_gun_base"
 SWEP.Spawnable = true

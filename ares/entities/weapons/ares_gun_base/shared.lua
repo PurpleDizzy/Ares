@@ -22,24 +22,28 @@ SWEP.Type = "primary"
 SWEP.IsGrenade = false
 SWEP.AllowDrop = true
 SWEP.AllowSights = true
+SWEP.Slot = 2
+
 
 SWEP.Weight             = 5
 SWEP.AutoSwitchTo       = false
 SWEP.AutoSwitchFrom     = false
-SWEP.Slot = 2
 
-SWEP.Primary.Sound          = Sound( "Weapon_Pistol.Empty" )
+
+SWEP.Primary.Sound          = Sound( "" )
 SWEP.Primary.Recoil         = 1.5
 SWEP.Primary.Damage         = 1
 SWEP.Primary.NumShots       = 1
 SWEP.Primary.Cone           = 0.02
 SWEP.Primary.Delay          = 0.15
 
-SWEP.Primary.ClipSize       = -1
-SWEP.Primary.DefaultClip    = -1
+SWEP.Primary.ClipSize       = 10
+SWEP.Primary.DefaultClip    = 10
+SWEP.Primary.ClipMax        = SWEP.Primary.ClipSize * 4
+
 SWEP.Primary.Automatic      = false
 SWEP.Primary.Ammo           = "none"
-SWEP.Primary.ClipMax        = -1
+
 
 SWEP.Secondary.ClipSize     = -1
 SWEP.Secondary.DefaultClip  = -1
@@ -61,6 +65,7 @@ SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
 SWEP.ReloadAnim = ACT_VM_RELOAD
 
 
+
 function SWEP:PrimaryAttack()
 
    if not self:CanPrimaryAttack() then return end
@@ -72,6 +77,34 @@ function SWEP:PrimaryAttack()
    self:TakePrimaryAmmo( 1 )
 
 end
+
+function SWEP:CanPrimaryAttack()
+   if not IsValid(self.Owner) then return end
+
+   if self.Weapon:Clip1() <= 0 then
+      self:DryFire()
+      return false
+   end
+   return true
+end
+
+function SWEP:DryFire()
+   if CLIENT and LocalPlayer() == self.Owner then
+	  if self.Type == "primary" then
+		self:EmitSound( "Default.ClipEmpty_Rifle" )
+	  elseif self.Type == "secondary" then
+		self:EmitSound( "Default.ClipEmpty_Pistol" )
+	  end
+   end
+   
+   self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+   
+end
+
+function SWEP:SecondaryAttack()
+	//self:IronSights()
+end
+
 
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
@@ -183,6 +216,18 @@ function SWEP:BulletPenetrate(bouncenum, attacker, tr, paininfo)
 	return true
 end
 
+function SWEP:GetSlot()
+	return self.Slot -- used so the game knows not to pick up gun of same kind
+end
+
+function SWEP:GetAmmo()
+	return self.Primary.Ammo, self.Primary.DefaultClip -- game knows what ammo to give player
+end
+
+function SWEP:GetType()
+	return self.Type
+end
+
 
 function SWEP:DoDrop(ply)
 	if self.AllowDrop then
@@ -202,37 +247,14 @@ function SWEP:DampenDrop()
    end
 end
 
-function SWEP:SecondaryAttack()
-	self:IronSights()
+function SWEP:Ammo1()
+   return IsValid(self.Owner) and self.Owner:GetAmmoCount(self.Primary.Ammo) or false
 end
 
-function SWEP:SecondaryAttack()
-
+function SWEP:GetHeadshotMultiplier(victim, dmginfo)
+   return self.HeadshotMultiplier
 end
 
-function SWEP:DryFire(setnext)
-   if CLIENT and LocalPlayer() == self.Owner then
-	  if self.Type == "primary" then
-		self:EmitSound( "Weapon_Rifle.Empty" )
-	  elseif self.Type == "secondary" then
-		self:EmitSound( "Weapon_Pistol.Empty" )
-	  end
-   end
-
-   setnext(self, CurTime() + 0.2)
-
-   self:Reload()
-end
-
-function SWEP:CanPrimaryAttack()
-   if not IsValid(self.Owner) then return end
-
-   if self.Weapon:Clip1() <= 0 then
-      self:DryFire(self.SetNextPrimaryFire)
-      return false
-   end
-   return true
-end
 
 function SWEP:Initialize()
    if CLIENT and self.Weapon:Clip1() == -1 then
@@ -246,49 +268,38 @@ function SWEP:Initialize()
       self:SetWeaponHoldType(self.HoldType or "pistol")
    end
    
-   bIronSights = false
-   
 end
 
-function SWEP:GetHeadshotMultiplier(victim, dmginfo)
-   return self.HeadshotMultiplier
-end
-
-function SWEP:Ammo1()
-   return IsValid(self.Owner) and self.Owner:GetAmmoCount(self.Primary.Ammo) or false
-end
-
-function SWEP:GetSlot()
-	return self.Slot -- used so the game knows not to pick up gun of same kind
-end
 
 function SWEP:IronSights()
 	if self.Owner:KeyDown(IN_ATTACK2) then
-		bIronSights = true
+		self:GetViewModelPosition(self.IronSightsPos, self.IronSightsAng)
 	else
-		bIronSights = false
+		self:GetViewModelPosition(Vector(0, 0, 0), Vector(0,0,0))
 	end
+end
 
+function SWEP:Think()
+	//self:IronSights()
 end
 
 -- Can't get ironsights to work properly since we need to fuck with bones and animations.
-
+/*
 function SWEP:GetViewModelPosition(pos, ang)
-	if not bIronSights then return pos, ang end
-	
-	local mul = 1.0
-	
-	if self.IronSightsAng then
-      ang = ang * 1
-      ang:RotateAroundAxis( ang:Right(),    self.IronSightsAng.x * mul )
-      ang:RotateAroundAxis( ang:Up(),       self.IronSightsAng.y * mul )
-      ang:RotateAroundAxis( ang:Forward(),  self.IronSightsAng.z * mul )
-    end
 
-	pos = pos + offset.x * ang:Right() * mul
-	pos = pos + offset.y * ang:Forward() * mul
-	pos = pos + offset.z * ang:Up() * mul
+	local Offset	= self.IronSightsPos
+	local Mul = 1.0
+
+
+
+	local Right 	= ang:Right()
+	local Up 		= ang:Up()
+	local Forward 	= ang:Forward()
+
+	pos = pos + Offset.x * Right * Mul
+	pos = pos + Offset.y * Forward * Mul
+	pos = pos + Offset.z * Up * Mul
 
 	return pos, ang
-	
 end
+*/
