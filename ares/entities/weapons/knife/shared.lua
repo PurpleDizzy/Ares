@@ -12,7 +12,7 @@ SWEP.Type = "melee"
 SWEP.Primary.Damage = 60
 
 
-SWEP.ViewModelFlip = true
+SWEP.ViewModelFlip = false
 SWEP.ViewModel			= "models/weapons/v_knife_t.mdl"
 SWEP.WorldModel			= "models/weapons/w_knife_t.mdl"
 
