@@ -31,6 +31,7 @@ end
    Desc: Player pressed a key (see IN enums)
 -----------------------------------------------------------]]
 function GM:KeyPress( ply, key )
+/*
    if not IsFirstTimePredicted() then return end
 
 	if not IsValid(ply) then return end
@@ -38,6 +39,7 @@ function GM:KeyPress( ply, key )
 		local wep = ply:GetActiveWeapon()
 		wep:IronSights()
 	end
+*/
 end
 
 
@@ -46,6 +48,7 @@ end
    Desc: Player released a key (see IN enums)
 -----------------------------------------------------------]]
 function GM:KeyRelease( ply, key )
+/*
    if not IsFirstTimePredicted() then return end
 
 	if not IsValid(ply) then return end
@@ -53,6 +56,7 @@ function GM:KeyRelease( ply, key )
 		local wep = ply:GetActiveWeapon()
 		wep:IronSights()
 	end
+*/
 end
 
 
