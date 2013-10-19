@@ -73,6 +73,117 @@ function SWEP:PrimaryAttack()
 
 end
 
+function SWEP:ShootBullet( dmg, recoil, numbul, cone )
+
+   self.Weapon:SendWeaponAnim(self.PrimaryAnim)
+
+   self.Owner:MuzzleFlash()
+   self.Owner:SetAnimation( PLAYER_ATTACK1 )
+
+   if not IsFirstTimePredicted() then return end
+
+   numbul = numbul or 1
+   cone   = cone   or 0.01
+
+   local bullet = {}
+   bullet.Num    = numbul
+   bullet.Src    = self.Owner:GetShootPos()
+   bullet.Dir    = self.Owner:GetAimVector()
+   bullet.Spread = Vector( cone, cone, 0 )
+   bullet.Tracer = 4
+   bullet.TracerName = self.Tracer or "Tracer"
+   bullet.Force  = dmg
+   bullet.Damage = dmg
+   bullet.Callback	= function(attacker, tracedata, dmginfo) 
+		
+						return self:BulletPenetrate(0, attacker, tracedata, dmginfo) 
+					  end
+
+   self.Owner:FireBullets( bullet )
+
+   -- Owner can die after firebullets
+   if (not IsValid(self.Owner)) or (not self.Owner:Alive()) or self.Owner:IsNPC() then return end
+
+end
+
+function SWEP:BulletPenetrate(bouncenum, attacker, tr, paininfo)
+	
+	local MaxPenetration
+
+	if self.Primary.Ammo == "SniperPenetratedRound" then -- .50 Ammo 
+		MaxPenetration = 20
+	elseif self.Primary.Ammo == "pistol" then -- pistols
+		MaxPenetration = 8
+	elseif self.Primary.Ammo == "357" then -- revolvers with big ass bullets
+		MaxPenetration = 12
+	elseif self.Primary.Ammo == "smg1" then -- smgs
+		MaxPenetration = 14
+	elseif self.Primary.Ammo == "ar2" then -- assault rifles
+		MaxPenetration = 16
+	elseif self.Primary.Ammo == "buckshot" then -- shotguns
+		MaxPenetration = 8
+	elseif self.Primary.Ammo == "slam" then -- secondary shotguns
+		MaxPenetration = 8
+	elseif self.Primary.Ammo ==	"AirboatGun" then -- metal piercing shotgun pellet
+		MaxPenetration = 20
+	else
+		MaxPenetration = 16
+	end
+	
+	// -- Direction (and length) that we are going to penetrate
+	local PenetrationDirection = tr.Normal * MaxPenetration
+	
+	if (tr.MatType == MAT_GLASS or tr.MatType == MAT_PLASTIC or tr.MatType == MAT_WOOD or tr.MatType == MAT_FLESH or tr.MatType == MAT_ALIENFLESH) then
+		PenetrationDirection = tr.Normal * (MaxPenetration * 2)
+	end
+		
+	local trace 	= {}
+	trace.endpos 	= tr.HitPos
+	trace.start 	= tr.HitPos + PenetrationDirection
+	trace.mask 		= MASK_SHOT
+	trace.filter 	= {self.Owner}
+	   
+	local trace 	= util.TraceLine(trace) 
+	
+	// -- Bullet didn't penetrate.
+	if (trace.StartSolid or trace.Fraction >= 1.0 or tr.Fraction <= 0.0) then return false end
+	
+	// -- Damage multiplier depending on surface
+	local fDamageMulti = 0.5
+	
+	if self.Primary.Ammo == "SniperPenetratedBullet" then
+		fDamageMulti = 1
+	elseif(tr.MatType == MAT_CONCRETE or tr.MatType == MAT_METAL) then
+		fDamageMulti = 0.3
+	elseif (tr.MatType == MAT_WOOD or tr.MatType == MAT_PLASTIC or tr.MatType == MAT_GLASS) then
+		fDamageMulti = 0.8
+	elseif (tr.MatType == MAT_FLESH or tr.MatType == MAT_ALIENFLESH) then
+		fDamageMulti = 0.9
+	end
+	
+	local newdamage = self.Primary.Damage * .6
+		
+	// -- Fire bullet from the exit point using the original trajectory
+	local penetratedbullet = {}
+		penetratedbullet.Num 		= 1
+		penetratedbullet.Src 		= trace.HitPos
+		penetratedbullet.Dir 		= tr.Normal	
+		penetratedbullet.Spread 	= Vector(0, 0, 0)
+		penetratedbullet.Tracer	= 1
+		penetratedbullet.TracerName 	= "m9k_effect_mad_penetration_trace"
+		penetratedbullet.Force		= 5
+		penetratedbullet.Damage	= paininfo:GetDamage() * fDamageMulti
+		penetratedbullet.Callback  	= function(a, b, c)	
+		local impactnum
+		if tr.MatType == MAT_GLASS then impactnum = 0 else impactnum = 1 end
+		return self:BulletPenetrate(bouncenum + impactnum, a,b,c) end	
+		
+	timer.Simple(0, function() if attacker != nil then attacker:FireBullets(penetratedbullet) end end)
+
+	return true
+end
+
+
 function SWEP:DoDrop(ply)
 	if self.AllowDrop then
 		self.Owner:DropWeapon(self)
@@ -93,37 +204,6 @@ end
 
 function SWEP:SecondaryAttack()
 	self:IronSights()
-end
-
-function SWEP:ShootBullet( dmg, recoil, numbul, cone )
-
-   self.Weapon:SendWeaponAnim(self.PrimaryAnim)
-
-   self.Owner:MuzzleFlash()
-   self.Owner:SetAnimation( PLAYER_ATTACK1 )
-
-   if not IsFirstTimePredicted() then return end
-
-   numbul = numbul or 1
-   cone   = cone   or 0.01
-
-   local bullet = {}
-   bullet.Num    = numbul
-   bullet.Src    = self.Owner:GetShootPos()
-   bullet.Dir    = self.Owner:GetAimVector()
-   bullet.Spread = Vector( cone, cone, 0 )
-   bullet.Tracer = 4
-   bullet.TracerName = self.Tracer or "Tracer"
-   bullet.Force  = 10
-   bullet.Damage = dmg
-
-   self.Owner:FireBullets( bullet )
-
-   -- Owner can die after firebullets
-   if (not IsValid(self.Owner)) or (not self.Owner:Alive()) or self.Owner:IsNPC() then return end
-
-
-
 end
 
 function SWEP:SecondaryAttack()
