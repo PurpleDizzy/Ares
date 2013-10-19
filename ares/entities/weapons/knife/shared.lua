@@ -24,9 +24,9 @@ SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.Primary.Ammo = "none"
 
-SWEP.Primary.Delay			= 0.12
+SWEP.Primary.Delay			= 1
 SWEP.Primary.Recoil			= 1.6
-SWEP.Primary.Automatic = true
+SWEP.Primary.Automatic = false
 SWEP.Primary.Cone = 0
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
