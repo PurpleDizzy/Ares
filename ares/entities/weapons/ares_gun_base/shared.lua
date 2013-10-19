@@ -105,6 +105,11 @@ function SWEP:SecondaryAttack()
 	//self:IronSights()
 end
 
+function SWEP:Holster(newgun)
+	self.Weapon:SetNextPrimaryFire(0)
+	return true
+end
+
 
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
