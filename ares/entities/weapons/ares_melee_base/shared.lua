@@ -18,8 +18,9 @@ SWEP.Category           = "Ares"
 SWEP.Spawnable          = false
 SWEP.AdminSpawnable     = false
 
-SWEP.IsSilent = true -- Is a suppressed weapon or kills silently
-
+//SWEP.IsSilent = true -- Is a suppressed weapon or kills silently
+SWEP.AllowDrop = false
+SWEP.AllowSights = false
 SWEP.IsGrenade = false
 
 SWEP.Weight             = 5
@@ -60,10 +61,6 @@ SWEP.IronSightsAng 		= Vector( 0, 0, 0 )
 
 SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
 SWEP.ReloadAnim = ACT_VM_RELOAD
-
-function SWEP:GetSlot()
-	return self.Slot -- used so the game knows not to pick up gun of same kind
-end
 
 
 function SWEP:SecondaryAttack()

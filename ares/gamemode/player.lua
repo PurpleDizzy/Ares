@@ -28,6 +28,7 @@ function GM:PlayerLoadout(ply)
 	ply:SelectWeapon("assault")
 end
 
+
 function GM:PlayerSpawn(ply)
 	if  ply:Team() == TEAM_SPECTATOR or ply:Team() == TEAM_UNASSIGNED  then
 
@@ -46,27 +47,16 @@ function GM:PlayerSpawn(ply)
 	self:PlayerLoadout(ply)
 end
 
-local ShouldDropWeapon = true
-
-local function ToggleDropWeapon(ply)
-	if ShouldDropWeapon then
-		ply:PrintMessage(HUD_PRINTNOTIFY,"Weapon drop disabled")
-		ShouldDropWeapon = false
-	else
-		ply:PrintMessage(HUD_PRINTNOTIFY, "Weapon drop enabled!")
-		ShouldDropWeapon = true
-	end
-end
-
 local function PlayerDropWeapon(ply)
-	if ShouldDropWeapon and ply:GetActiveWeapon():IsValid() then
-		ply:DropWeapon(ply:GetActiveWeapon())
+	if ply:GetActiveWeapon():IsValid() then
+		ply:GetActiveWeapon():DoDrop()
 	end
 end
 
 local function DropAllWeapons(ply)
 	for k,v in pairs(ply:GetWeapons()) do
-		ply:DropWeapon(v)
+		v:DoDrop()
+		v:DampenDrop()
 	end
 end
 

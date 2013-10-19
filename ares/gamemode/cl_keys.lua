@@ -32,13 +32,13 @@ function GM:PlayerBindPress(ply, bind, pressed)
    
    	  local curslot = ply:GetActiveWeapon():GetSlot()
 	  
-	  for i = 0, curslot - 1 do
+	  for i =  curslot - 1,0,-1 do
 	  	  for k,v in pairs(ply:GetWeapons()) do
 			if v:GetSlot() == i then DoWepSelect(v:GetClass()) end
 		  end
 	  end
 	  
-	  for i = curslot + 1, 8 do
+	  for i = 8,curslot + 1,-1 do
 		  for k,v in pairs(ply:GetWeapons()) do
 			if v:GetSlot() == i then DoWepSelect(v:GetClass()) end
 		  end

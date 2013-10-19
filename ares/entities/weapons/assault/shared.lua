@@ -31,8 +31,6 @@ SWEP.ViewModel			= "models/weapons/v_rif_m4a1.mdl"
 SWEP.ViewModelFlip = true
 SWEP.WorldModel			= "models/weapons/w_rif_m4a1.mdl"
 
-SWEP.ViewModelFlip = true
-
 SWEP.Primary.Sound = Sound( "Weapon_M4A1.Single" )
 
 SWEP.IronSightsPos 		= Vector( 6, 1, 0.95 )

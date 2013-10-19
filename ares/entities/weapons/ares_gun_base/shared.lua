@@ -20,6 +20,8 @@ SWEP.AdminSpawnable     = false
 //SWEP.IsSilent = false -- kills silently. Not used yet, maybe later?
 SWEP.Type = "primary"
 SWEP.IsGrenade = false
+SWEP.AllowDrop = true
+SWEP.AllowSights = true
 
 SWEP.Weight             = 5
 SWEP.AutoSwitchTo       = false
@@ -69,6 +71,24 @@ function SWEP:PrimaryAttack()
    self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
    self:TakePrimaryAmmo( 1 )
 
+end
+
+function SWEP:DoDrop(ply)
+	if self.AllowDrop then
+		self.Owner:DropWeapon(self)
+	end
+end
+
+function SWEP:DampenDrop()
+   -- For some reason gmod drops guns on death at a speed of 400 units, which
+   -- catapults them away from the body. Here we want people to actually be able
+   -- to find a given corpse's weapon, so we override the velocity here and call
+   -- this when dropping guns on death.
+   local phys = self:GetPhysicsObject()
+   if IsValid(phys) then
+      phys:SetVelocityInstantaneous(Vector(0,0,-75) + phys:GetVelocity() * 0.001)
+      phys:AddAngleVelocity(phys:GetAngleVelocity() * -0.99)
+   end
 end
 
 function SWEP:SecondaryAttack()
