@@ -5,6 +5,14 @@ function HUDHide( hud )
 	end
 end
 hook.Add("HUDShouldDraw","HUDHide",HUDHide)
+
+local colortable = {
+		rebel = Color( 210, 90, 0, 100),
+		imperial = Color( 0, 90, 210, 100)
+};
+
+
+
 -- FONTS --
 surface.CreateFont("HPFont", {font = "HUDNumber",
                                     size = 20,
@@ -44,7 +52,7 @@ function CheckTeam()
 end	
 function RebelHUD()
 	local Team = "Rebel"
-	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, Color( 210, 90, 0, 100) )
+	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, colortable.rebel )
 	surface.SetTextColor( 0, 0, 0, 255)
 	surface.SetTextPos ( 70, ScrH() - 99)
 	surface.SetFont( "TeamFont" )
@@ -52,7 +60,7 @@ function RebelHUD()
 end
 function ImperialHUD()
 	local Team = "Imperial"
-	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, Color( 0, 90, 210, 100) )
+	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, colortable.imperial )
 	surface.SetTextColor( 0, 0, 0, 255)
 	surface.SetTextPos ( 50, ScrH() - 99)
 	surface.SetFont( "TeamFont" )
