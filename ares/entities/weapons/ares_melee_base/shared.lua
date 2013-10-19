@@ -22,6 +22,7 @@ SWEP.AdminSpawnable     = false
 SWEP.AllowDrop = false
 SWEP.AllowSights = false
 SWEP.IsGrenade = false
+SWEP.Type = "melee"
 
 SWEP.Weight             = 5
 SWEP.AutoSwitchTo       = false
