@@ -30,13 +30,24 @@ surface.CreateFont("AmmoCFont", {font = "HUDNumber",
 surface.CreateFont("WepFont", {font = "HUDNumber",
                                     size = 35,
                                     weight = 700})
+surface.CreateFont("ver", {font = "HUDNumber",
+                                    size = 10,
+                                    weight = 500})
+surface.CreateFont("ver2", {font = "HUDNumber",
+                                    size = 20,
+                                    weight = 1000})
 -- Main --
 function AresHud()
-	CheckTeam()
+	Check()
+	ver()
 end	
 hook.Add( "HUDPaint", "AresHud", AresHud )
 
-function CheckTeam()
+function ver()
+	draw.DrawText( "CODENAME: Ares" , "ver", 110, ScrH() - 10, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	draw.DrawText( "InDev" , "ver2", 30, 10, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+end
+function Check()
 	local Team = LocalPlayer():Team()
 	if Team == 1 then
 		DrawHPBarAndText()
