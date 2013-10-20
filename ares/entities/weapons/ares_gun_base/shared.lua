@@ -104,7 +104,7 @@ function SWEP:DryFire()
 end
 
 function SWEP:SecondaryAttack()
-	//self:IronSights()
+
 end
 
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
@@ -256,41 +256,62 @@ function SWEP:Initialize()
       self:SetWeaponHoldType(self.HoldType or "pistol")
    end
    
-end
-
-function SWEP:Think()
-	if self.Owner:KeyDown(IN_ATTACK2) then
-		if ( !self.IronSightsPos ) then return end
-		
-		self.IronSights = true 
-	else
-		if ( !self.IronSightsPos ) then return end
-		
-		self.IronSights = false
-	end
+   if SERVER then
+		util.AddNetworkString( "IronSights" )
+   end
+   
 end
 
 function SWEP:Holster()
 	self.Weapon:SetNextPrimaryFire(self.DeploySpeed)
+	self.Weapon:SetIronsights(false)
 	return true
 end
 
+function SWEP:Deploy()
+	self.Weapon:SetIronsights(false)
+end
+
 function SWEP:Reload()
+	self.Weapon:SetNetworkedBool("Ironsights", false)
 	self.Weapon:DefaultReload( ACT_VM_RELOAD )
 end
 
+function SWEP:Think()
+	self:IronSight()
+end
 
--- Can't get ironsights to work properly since we need to fuck with bones and animations.
+function SWEP:IronSight()
+	if self.Owner:KeyDown(IN_ATTACK2) then
+		if ( !self.IronSightsPos ) then return end
+		self.Weapon:SetNetworkedBool("Ironsights", true)
+	else
+		if ( !self.IronSightsPos ) then return end
+		self.Weapon:SetNetworkedBool("Ironsights", false)
+	end
+end
+
+function SWEP:SetIronsights(b)
+	self.Weapon:SetNetworkedBool("Ironsights", b)
+end
+
+function SWEP:GetIronsights()
+	return self.Weapon:GetNWBool("Ironsights")
+end
+
+
 
 local IRONSIGHT_TIME = 0.25
 
 function SWEP:GetViewModelPosition( pos, ang )
 
 	if ( !self.IronSightsPos ) then return pos, ang end
+	if self.Type == "melee" then return pos, ang end
 
-	local bIron = self.IronSights
+	local bIron = self:GetIronsights()
+
 	
-	if ( bIron != self.bLastIron ) then
+	if bIron != self.bLastIron then
 	
 		self.bLastIron = bIron 
 		self.fIronTime = CurTime()
@@ -307,7 +328,7 @@ function SWEP:GetViewModelPosition( pos, ang )
 	
 	local fIronTime = self.fIronTime or 0
 
-	if ( !bIron && fIronTime < CurTime() - IRONSIGHT_TIME ) then 
+	if (not bIron and fIronTime < CurTime() - IRONSIGHT_TIME ) then 
 		return pos, ang 
 	end
 	
