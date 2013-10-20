@@ -97,6 +97,7 @@ function DrawWEPBarAndText()
 	local ply = LocalPlayer()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
 	local TYPE = LocalPlayer():GetActiveWeapon().Type
+//	local SLOT = LocalPlayer():GetActiveWeapon().Slot
 //	local MAXC = LocalPlayer():GetActiveWeapon():GetTable().Primary.ClipSize
 if TYPE == "melee" then
 	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 100, 200, 40, Color( 100,100,100,100) )
@@ -114,7 +115,7 @@ if TYPE == "melee" then
 	surface.SetFont( "AmmoCFont" )
 	surface.DrawText( "Melee" )
 end
-if TYPE == "primary" then
+if TYPE == "firearm" then
 	local WEP = LocalPlayer():GetActiveWeapon()
 	local CLIP = LocalPlayer():GetActiveWeapon():Clip1()
 	local AMMO = LocalPlayer():GetAmmoCount(WEP:GetPrimaryAmmoType())

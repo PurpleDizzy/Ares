@@ -18,7 +18,7 @@ SWEP.Spawnable          = false
 SWEP.AdminSpawnable     = false
 
 //SWEP.IsSilent = false -- kills silently. Not used yet, maybe later?
-SWEP.Type = "primary"
+SWEP.Type = "firearm"
 SWEP.IsGrenade = false
 SWEP.AllowDrop = true
 SWEP.AllowSights = true
@@ -90,10 +90,12 @@ end
 
 function SWEP:DryFire()
    if CLIENT and LocalPlayer() == self.Owner then
-	  if self.Type == "primary" then
-		self:EmitSound( "Default.ClipEmpty_Rifle" )
-	  elseif self.Type == "secondary" then
-		self:EmitSound( "Default.ClipEmpty_Pistol" )
+	  if self.Type == "firearm" then
+		if self.Slot == 2 then
+			self:EmitSound( "Default.ClipEmpty_Rifle" )
+		elseif self.Type == "secondary" then
+			self:EmitSound( "Default.ClipEmpty_Pistol" )
+		end
 	  end
    end
    
@@ -104,12 +106,6 @@ end
 function SWEP:SecondaryAttack()
 	//self:IronSights()
 end
-
-function SWEP:Holster(newgun)
-	self.Weapon:SetNextPrimaryFire(self.DeploySpeed)
-	return true
-end
-
 
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
@@ -221,19 +217,6 @@ function SWEP:BulletPenetrate(bouncenum, attacker, tr, paininfo)
 	return true
 end
 
-function SWEP:GetSlot()
-	return self.Slot -- used so the game knows not to pick up gun of same kind
-end
-
-function SWEP:GetAmmo()
-	return self.Primary.Ammo, self.Primary.DefaultClip -- game knows what ammo to give player
-end
-
-function SWEP:GetType()
-	return self.Type
-end
-
-
 function SWEP:DoDrop(ply)
 	if self.AllowDrop then
 		self.Owner:DropWeapon(self)
@@ -275,36 +258,92 @@ function SWEP:Initialize()
    
 end
 
-
-function SWEP:IronSights()
+function SWEP:Think()
 	if self.Owner:KeyDown(IN_ATTACK2) then
-		self:GetViewModelPosition(self.IronSightsPos, self.IronSightsAng)
+		if ( !self.IronSightsPos ) then return end
+		
+		self.IronSights = true 
 	else
-		self:GetViewModelPosition(Vector(0, 0, 0), Vector(0,0,0))
+		if ( !self.IronSightsPos ) then return end
+		
+		self.IronSights = false
 	end
 end
 
-function SWEP:Think()
-	//self:IronSights()
+function SWEP:Holster()
+	self.Weapon:SetNextPrimaryFire(self.DeploySpeed)
+	return true
 end
 
+function SWEP:Reload()
+	self.Weapon:DefaultReload( ACT_VM_RELOAD )
+end
+
+
 -- Can't get ironsights to work properly since we need to fuck with bones and animations.
-/*
-function SWEP:GetViewModelPosition(pos, ang)
+
+local IRONSIGHT_TIME = 0.25
+
+function SWEP:GetViewModelPosition( pos, ang )
+
+	if ( !self.IronSightsPos ) then return pos, ang end
+
+	local bIron = self.IronSights
+	
+	if ( bIron != self.bLastIron ) then
+	
+		self.bLastIron = bIron 
+		self.fIronTime = CurTime()
+		
+		if ( bIron ) then 
+			self.SwayScale 	= 0.3
+			self.BobScale 	= 0.1
+		else 
+			self.SwayScale 	= 1.0
+			self.BobScale 	= 1.0
+		end
+	
+	end
+	
+	local fIronTime = self.fIronTime or 0
+
+	if ( !bIron && fIronTime < CurTime() - IRONSIGHT_TIME ) then 
+		return pos, ang 
+	end
+	
+	local Mul = 1.0
+	
+	if ( fIronTime > CurTime() - IRONSIGHT_TIME ) then
+	
+		Mul = math.Clamp( (CurTime() - fIronTime) / IRONSIGHT_TIME, 0, 1 )
+		
+		if (!bIron) then Mul = 1 - Mul end
+	
+	end
 
 	local Offset	= self.IronSightsPos
-	local Mul = 1.0
-
-
-
+	
+	if ( self.IronSightsAng ) then
+	
+		ang = ang * 1
+		ang:RotateAroundAxis( ang:Right(), 		self.IronSightsAng.x * Mul )
+		ang:RotateAroundAxis( ang:Up(), 		self.IronSightsAng.y * Mul )
+		ang:RotateAroundAxis( ang:Forward(), 	self.IronSightsAng.z * Mul )
+	
+	
+	end
+	
 	local Right 	= ang:Right()
 	local Up 		= ang:Up()
 	local Forward 	= ang:Forward()
+	
+	
 
 	pos = pos + Offset.x * Right * Mul
 	pos = pos + Offset.y * Forward * Mul
 	pos = pos + Offset.z * Up * Mul
 
 	return pos, ang
+	
 end
-*/
+

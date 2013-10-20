@@ -32,17 +32,15 @@ end
 function AmmoSpawn(ply)
 	local amt = 1
 	for k,v in pairs(ply:GetWeapons()) do
-		if v:GetType() == "primary" then
+		if v.Slot == 2 then
 			amt = 4
-		elseif v:GetType() == "secondary" then
+		elseif v.Slot == 1 then
 			amt = 3
 		end
 		
-		if v:GetAmmo() == "none" or v:GetAmmo() == nil then return end
+		if v.Primary.Ammo == "none" or v.Primary.Ammo == nil then return end
 		
-		local ammoname, defclip = v:GetAmmo()
-		
-		ply:GiveAmmo( amt * defclip, ammoname)
+		ply:GiveAmmo( amt * v.Primary.DefaultClip, v.Primary.Ammo)
 		
 	end
 end
@@ -84,6 +82,8 @@ hook.Add("DoPlayerDeath", "Player.DropAllWeapons", DropAllWeapons)
 concommand.Add("player_dropweapon", PlayerDropWeapon)
 //concommand.Add( "player_dropweapon_toggle", ToggleDropWeapon)
 
+concommand.Add("cleanmap", game.CleanUpMap())
+
 function GM:PlayerDeathSound()
 	-- Return true to not play the default sounds
 	return true
@@ -105,7 +105,7 @@ function GM:PlayerCanPickupWeapon( ply, ent )
 	weptable = ply:GetWeapons()
 	
 	for k,v in pairs(weptable) do
-		if v:GetSlot() == ent:GetSlot() then return false end
+		if v.Slot == ent.Slot then return false end
 	end
 	
 	return true

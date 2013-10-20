@@ -7,7 +7,7 @@ SWEP.Slot				= 2 -- One less than Displayed Slot Number
 
 --SWEP.Icon = "your path
 SWEP.HoldType			= "ar2"
-SWEP.Type = "primary"
+SWEP.Type = "firearm"
 
 SWEP.Primary.Delay			= 0.12
 SWEP.Primary.Recoil			= 1.6
@@ -20,12 +20,13 @@ SWEP.Primary.DefaultClip = 30
 SWEP.Primary.ClipMax = 60
 
 SWEP.ViewModelFlip = true
+SWEP.ViewModelFOV = 70
 SWEP.ViewModel			= "models/weapons/v_rif_m4a1.mdl"
 SWEP.WorldModel			= "models/weapons/w_rif_m4a1.mdl"
 
 SWEP.Primary.Sound = Sound( "Weapon_M4A1.Single" )
 
-SWEP.IronSightsPos 		= Vector( 6, 1, 0.95 )
+SWEP.IronSightsPos 		= Vector( 6, -1, 0.95 )
 SWEP.IronSightsAng 		= Vector( 2.6, 1.37, 3.5 )
 
 

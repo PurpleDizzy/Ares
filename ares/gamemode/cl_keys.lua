@@ -13,34 +13,34 @@ function GM:PlayerBindPress(ply, bind, pressed)
 
    if bind == "invnext" and pressed then
    
-	  local curslot = ply:GetActiveWeapon():GetSlot()
+	  local curslot = ply:GetActiveWeapon().Slot
 	  
 	  for i = curslot + 1, 8 do
 		  for k,v in pairs(ply:GetWeapons()) do
-			if v:GetSlot() == i then DoWepSelect(v:GetClass()) end
+			if v.Slot == i then DoWepSelect(v:GetClass()) end
 		  end
 	  end
 	  
 	  for i = 0, curslot - 1 do
 	  	  for k,v in pairs(ply:GetWeapons()) do
-			if v:GetSlot() == i then DoWepSelect(v:GetClass()) end
+			if v.Slot == i then DoWepSelect(v:GetClass()) end
 		  end
 	  end
 	  
       return true
    elseif bind == "invprev" and pressed then
    
-   	  local curslot = ply:GetActiveWeapon():GetSlot()
+   	  local curslot = ply:GetActiveWeapon().Slot
 	  
 	  for i =  curslot - 1,0,-1 do
 	  	  for k,v in pairs(ply:GetWeapons()) do
-			if v:GetSlot() == i then DoWepSelect(v:GetClass()) end
+			if v.Slot == i then DoWepSelect(v:GetClass()) end
 		  end
 	  end
 	  
 	  for i = 8,curslot + 1,-1 do
 		  for k,v in pairs(ply:GetWeapons()) do
-			if v:GetSlot() == i then DoWepSelect(v:GetClass()) end
+			if v.Slot == i then DoWepSelect(v:GetClass()) end
 		  end
 	  end
    
@@ -50,7 +50,7 @@ function GM:PlayerBindPress(ply, bind, pressed)
 		idx = idx - 1
 		--choose gun in idx
 		for k,v in pairs(ply:GetWeapons()) do
-			if v:GetSlot() == idx then
+			if v.Slot == idx then
 				DoWepSelect(v:GetClass())
 			end
 		end
