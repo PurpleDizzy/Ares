@@ -6,14 +6,6 @@ function HUDHide( hud )
 end
 hook.Add("HUDShouldDraw","HUDHide",HUDHide)
 
-local colortable = {
-		rebel = 	team.GetColor (1),
-		imperial = 	team.GetColor (2),
-		spec = 	team.GetColor (1002)
-};
-
-
-
 -- FONTS --
 surface.CreateFont("HPFont", {font = "HUDNumber",
                                     size = 20,
@@ -30,55 +22,57 @@ surface.CreateFont("AmmoCFont", {font = "HUDNumber",
 surface.CreateFont("WepFont", {font = "HUDNumber",
                                     size = 35,
                                     weight = 700})
-surface.CreateFont("ver", {font = "HUDNumber",
-                                    size = 10,
-                                    weight = 500})
-surface.CreateFont("ver2", {font = "HUDNumber",
-                                    size = 20,
-                                    weight = 1000})
 -- Main --
 function AresHud()
-	Check()
+	CheckTeam()
 	ver()
 end	
 hook.Add( "HUDPaint", "AresHud", AresHud )
 
-function ver()
-	draw.DrawText( "CODENAME: Ares" , "ver", 110, ScrH() - 10, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-	draw.DrawText( "InDev" , "ver2", 30, 10, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-end
-function Check()
+function CheckTeam()
 	local Team = LocalPlayer():Team()
 	if Team == 1 then
-		DrawHPBarAndText()
 		RebelHUD()
-		DrawWEPBarAndText()
 	end
 	if Team == 2 then
-		DrawHPBarAndText()
 		ImperialHUD()
-		DrawWEPBarAndText()
 	end
 	if Team == 1002 then
 		SpecHUD()
 	end
 end	
+
+function ver()
+	draw.DrawText( "CODENAME: Ares" , "ver", 110, ScrH() - 10, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	draw.DrawText( "InDev" , "ver2", 30, 10, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+end
+
 function RebelHUD()
+	local color = team.GetColor (1)
 	local Team = "Rebel"
-	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, colortable.rebel )
+	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, color )
 	draw.DrawText(Team, "TeamFont", 110, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	DrawHPBar()
+	DrawWEPBar()
 end
+
 function ImperialHUD()
+	local color = team.GetColor (2)
 	local Team = "Imperial"
-	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, colortable.imperial )
+	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, color )
 	draw.DrawText(Team, "TeamFont", 110, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	DrawHPBar()	
+	DrawWEPBar()
 end
+
 function SpecHUD()
+	local color = team.GetColor (1002)
 	local Team = "Spectator"
-	draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, colortable.spec )
+	draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, color )
 	draw.DrawText(Team, "TeamFont", 110, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 end
-function DrawHPBarAndText()
+
+function DrawHPBar()
 	local ply = LocalPlayer()
 	local HP = LocalPlayer():Health()
 	local MHP = math.Clamp( HP, 0, 100 )
@@ -91,31 +85,31 @@ function DrawHPBarAndText()
 	draw.DrawText( "HP" , "HPFont", 25, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 end
 
-function DrawWEPBarAndText()
+function DrawWEPBar()
 	local ply = LocalPlayer()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
 	local TYPE = LocalPlayer():GetActiveWeapon().Type
 //	local SLOT = LocalPlayer():GetActiveWeapon().Slot
-if TYPE == "melee" then
-	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 100,100,100,100) )
-	draw.DrawText(WEPN, "WepFont", ScrW() - 115, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-end
-if TYPE == "firearm" then
-	local WEP = LocalPlayer():GetActiveWeapon()
-	local CLIP = LocalPlayer():GetActiveWeapon():Clip1()
-	local AMMO = LocalPlayer():GetAmmoCount(WEP:GetPrimaryAmmoType())
-	local MAXC = LocalPlayer():GetActiveWeapon():GetTable().Primary.ClipSize
-	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 100, 200, 40, Color( 100,100,100,100) )
-	draw.DrawText(WEPN, "WepFont", ScrW() - 115, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-	draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
-	if WEPN == "M4A1" then
-		if CLIP ~= 0 then
-			draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color(100,100,100,255) )
-			draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color( 225, 255, 255, 40) )
-		end
+	if TYPE == "melee" then
+		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 100,100,100,100) )
+		draw.DrawText(WEPN, "WepFont", ScrW() - 115, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 	end
-	draw.DrawText( CLIP , "AmmoCFont", ScrW() - 150, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-	draw.DrawText( "/" , "AmmoCFont", ScrW() - 115, ScrH() - 52, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-	draw.DrawText( AMMO , "AmmoCFont", ScrW() - 80, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-end
+	if TYPE == "firearm" then
+		local WEP = LocalPlayer():GetActiveWeapon()
+		local CLIP = LocalPlayer():GetActiveWeapon():Clip1()
+		local AMMO = LocalPlayer():GetAmmoCount(WEP:GetPrimaryAmmoType())
+		local MAXC = LocalPlayer():GetActiveWeapon():GetTable().Primary.ClipSize
+		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 100, 200, 40, Color( 100,100,100,100) )
+		draw.DrawText(WEPN, "WepFont", ScrW() - 115, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
+		if WEPN == "M4A1" then
+			if CLIP ~= 0 then
+				draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color(100,100,100,255) )
+				draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color( 225, 255, 255, 40) )
+			end
+		end
+		draw.DrawText( CLIP , "AmmoCFont", ScrW() - 150, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+		draw.DrawText( "/" , "AmmoCFont", ScrW() - 115, ScrH() - 52, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+		draw.DrawText( AMMO , "AmmoCFont", ScrW() - 80, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	end
 end
