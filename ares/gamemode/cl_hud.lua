@@ -25,7 +25,6 @@ surface.CreateFont("WepFont", {font = "HUDNumber",
 -- Main --
 function AresHud()
 	CheckTeam()
-	ver()
 end	
 hook.Add( "HUDPaint", "AresHud", AresHud )
 
