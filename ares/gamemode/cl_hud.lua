@@ -42,11 +42,6 @@ function CheckTeam()
 	end
 end	
 
-function ver()
-	draw.DrawText( "CODENAME: Ares" , "ver", 110, ScrH() - 10, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-	draw.DrawText( "InDev" , "ver2", 30, 10, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-end
-
 function RebelHUD()
 	local color = team.GetColor (1)
 	local Team = "Rebel"
@@ -94,7 +89,7 @@ function DrawWEPBar()
 		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 100,100,100,100) )
 		draw.DrawText(WEPN, "WepFont", ScrW() - 115, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 	end
-	if TYPE == "firearm" then
+	if TYPE == "firearm" or TYPE == "energy" then
 		local WEP = LocalPlayer():GetActiveWeapon()
 		local CLIP = LocalPlayer():GetActiveWeapon():Clip1()
 		local AMMO = LocalPlayer():GetAmmoCount(WEP:GetPrimaryAmmoType())
