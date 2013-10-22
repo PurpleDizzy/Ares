@@ -47,15 +47,7 @@ end
 function DrawWEPBar()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
 	local TYPE = LocalPlayer():GetActiveWeapon().Type
-<<<<<<< HEAD
 	if TYPE ~= "melee" then
-=======
-	if TYPE == "melee" then
-		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 100,100,100,100) )
-		draw.DrawText(WEPN, "WepFont", ScrW() - 115, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-	end
-	if TYPE == "firearm" or TYPE == "energy" then
->>>>>>> 0706c4a1db93b329b1f94d2020293f06db798b58
 		local WEP = LocalPlayer():GetActiveWeapon()
 		local CLIP = LocalPlayer():GetActiveWeapon():Clip1()
 		local AMMO = LocalPlayer():GetAmmoCount(WEP:GetPrimaryAmmoType())
