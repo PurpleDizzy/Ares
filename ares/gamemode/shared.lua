@@ -165,6 +165,7 @@ function GM:CreateTeams()
 	team.SetUp( TEAM_BLUE, "Imperials", Color( 0, 90, 210 ) )
 	team.SetSpawnPoint( TEAM_BLUE, "info_terrorist" ) -- <-- This would be info_terrorist or some entity that is in your map
 	
+	team.SetUp( TEAM_SPECTATOR, "Spectator", Color( 50, 50, 50 ) )
 	team.SetSpawnPoint( TEAM_SPECTATOR, "worldspawn" ) 
 	
 end
