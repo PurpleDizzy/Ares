@@ -5,85 +5,48 @@ function HUDHide( hud )
 	end
 end
 hook.Add("HUDShouldDraw","HUDHide",HUDHide)
-
 -- FONTS --
 surface.CreateFont("HPFont", {font = "HUDNumber",
                                     size = 20,
                                     weight = 700})
-									
 surface.CreateFont("TeamFont", {font = "HUDNumber",
                                     size = 35,
                                     weight = 700})
-
 surface.CreateFont("AmmoCFont", {font = "HUDNumber",
                                     size = 40,
                                     weight = 700})
-									
 surface.CreateFont("WepFont", {font = "HUDNumber",
                                     size = 35,
                                     weight = 700})
 -- Main --
 function AresHud()
-	CheckTeam()
+	local TV = LocalPlayer():Team()
+	local TC = team.GetColor (TV)
+	local T = team.GetName (TV)
+	if TV ~= 1002 then	
+		draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, TC )
+		draw.DrawText(T, "TeamFont", 110, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+		DrawHPBar()
+		DrawWEPBar()
+	else
+		draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, TC )
+		draw.DrawText(T, "TeamFont", 110, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	end
 end	
 hook.Add( "HUDPaint", "AresHud", AresHud )
-
-function CheckTeam()
-	local Team = LocalPlayer():Team()
-	if Team == 1 then
-		RebelHUD()
-	end
-	if Team == 2 then
-		ImperialHUD()
-	end
-	if Team == 1002 then
-		SpecHUD()
-	end
-end	
-
-function RebelHUD()
-	local color = team.GetColor (1)
-	local Team = "Rebel"
-	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, color )
-	draw.DrawText(Team, "TeamFont", 110, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-	DrawHPBar()
-	DrawWEPBar()
-end
-
-function ImperialHUD()
-	local color = team.GetColor (2)
-	local Team = "Imperial"
-	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, color )
-	draw.DrawText(Team, "TeamFont", 110, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-	DrawHPBar()	
-	DrawWEPBar()
-end
-
-function SpecHUD()
-	local color = team.GetColor (1002)
-	local Team = "Spectator"
-	draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, color )
-	draw.DrawText(Team, "TeamFont", 110, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
-end
-
 function DrawHPBar()
-	local ply = LocalPlayer()
-	local HP = LocalPlayer():Health()
-	local MHP = math.Clamp( HP, 0, 100 )
+	local HP = math.Clamp( LocalPlayer():Health(), 0, 100 )
 	draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
-	if MHP ~= 0 then
+	if HP ~= 0 then
 		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 40, Color( 220, 108, 108, 230) )
 		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 40, Color( 225, 255, 255, 40) )
 	end
-	draw.DrawText( MHP , "HPFont", 180, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	draw.DrawText( HP , "HPFont", 180, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 	draw.DrawText( "HP" , "HPFont", 25, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 end
-
 function DrawWEPBar()
-	local ply = LocalPlayer()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
 	local TYPE = LocalPlayer():GetActiveWeapon().Type
-//	local SLOT = LocalPlayer():GetActiveWeapon().Slot
 	if TYPE == "melee" then
 		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 100,100,100,100) )
 		draw.DrawText(WEPN, "WepFont", ScrW() - 115, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
