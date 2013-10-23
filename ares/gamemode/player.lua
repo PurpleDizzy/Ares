@@ -21,12 +21,12 @@ function GM:PlayerInitialSpawn( ply )
 end
 
 function GM:PlayerLoadout(ply)
-	ply:Give("assault")
-	ply:Give("laserpistol")
+	ply:Give("weapon_assault_debug")
+	ply:Give("weapon_laserpistol_debug")
 	ply:Give("knife")
 	AmmoSpawn(ply)
 	
-	ply:SelectWeapon("assault")
+	ply:SelectWeapon("weapon_assault_debug")
 end
 
 // -- Give proper ammo to each spawning player
