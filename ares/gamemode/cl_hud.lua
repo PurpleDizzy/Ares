@@ -37,6 +37,7 @@ hook.Add( "HUDPaint", "AresHud", AresHud )
 function DrawHPBar()
 	local HPnum = LocalPlayer():Health()
 	local HP = math.Clamp( HPnum, 0, 100 )
+	if HPnum < 0 then HPnum = 0 end
 	draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
 	if HP ~= 0 then
 		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 40, Color( 220, 108, 108, 230) )
