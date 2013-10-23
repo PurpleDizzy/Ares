@@ -17,12 +17,12 @@ SWEP.Category           = "Ares"
 SWEP.Spawnable          = false
 SWEP.AdminSpawnable     = false
 
-//SWEP.IsSilent = false -- kills silently. Not used yet, maybe later?
+
 SWEP.Type = "firearm"
-SWEP.IsGrenade = false
 SWEP.AllowDrop = true
 SWEP.AllowSights = true
 SWEP.Slot = 2
+SWEP.AllowPen = true
 
 
 SWEP.Weight             = 5
@@ -39,7 +39,7 @@ SWEP.Primary.Delay          = 0.15
 
 SWEP.Primary.ClipSize       = 10
 SWEP.Primary.DefaultClip    = 10
-SWEP.Primary.ClipMax        = SWEP.Primary.ClipSize * 4
+SWEP.Primary.MaxAmmo        = SWEP.Primary.ClipSize * 4
 
 SWEP.Primary.Automatic      = false
 SWEP.Primary.Ammo           = "none"
@@ -49,12 +49,8 @@ SWEP.Secondary.ClipSize     = -1
 SWEP.Secondary.DefaultClip  = -1
 SWEP.Secondary.Automatic    = false
 SWEP.Secondary.Ammo         = "none"
-SWEP.Secondary.ClipMax      = -1
 
-SWEP.HeadshotMultiplier = 2.7 -- haven't modified
-
-//SWEP.StoredAmmo = 0	-- Taken from ttt. Might not be used but just in case.
-//SWEP.IsDropped = false  -- ^ Used to save ammo in gun when ply drops
+SWEP.HeadshotMultiplier = 2.7
 
 SWEP.DeploySpeed = 1.4
 
@@ -130,7 +126,7 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Damage = dmg
    bullet.Callback	= function(attacker, tracedata, dmginfo) 
 		
-						return self:BulletPenetrate(0, attacker, tracedata, dmginfo) 
+						if self.AllowPen then return self:BulletPenetrate(attacker, tracedata, dmginfo) end
 					  end
 
    self.Owner:FireBullets( bullet )
@@ -140,29 +136,9 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
 end
 
-function SWEP:BulletPenetrate(bouncenum, attacker, tr, paininfo)
+function SWEP:BulletPenetrate(attacker, tr, paininfo)
 	
-	local MaxPenetration
-
-	if self.Primary.Ammo == "SniperPenetratedRound" then -- .50 Ammo 
-		MaxPenetration = 20
-	elseif self.Primary.Ammo == "pistol" then -- pistols
-		MaxPenetration = 8
-	elseif self.Primary.Ammo == "357" then -- revolvers with big ass bullets
-		MaxPenetration = 12
-	elseif self.Primary.Ammo == "smg1" then -- smgs
-		MaxPenetration = 14
-	elseif self.Primary.Ammo == "ar2" then -- assault rifles
-		MaxPenetration = 16
-	elseif self.Primary.Ammo == "buckshot" then -- shotguns
-		MaxPenetration = 8
-	elseif self.Primary.Ammo == "slam" then -- secondary shotguns
-		MaxPenetration = 8
-	elseif self.Primary.Ammo ==	"AirboatGun" then -- metal piercing shotgun pellet
-		MaxPenetration = 20
-	else
-		MaxPenetration = 16
-	end
+	local MaxPenetration = 20 // -- amount of objects in can go through
 	
 	// -- Direction (and length) that we are going to penetrate
 	local PenetrationDirection = tr.Normal * MaxPenetration
@@ -170,7 +146,12 @@ function SWEP:BulletPenetrate(bouncenum, attacker, tr, paininfo)
 	if (tr.MatType == MAT_GLASS or tr.MatType == MAT_PLASTIC or tr.MatType == MAT_WOOD or tr.MatType == MAT_FLESH or tr.MatType == MAT_ALIENFLESH) then
 		PenetrationDirection = tr.Normal * (MaxPenetration * 2)
 	end
-		
+	
+	// -- Damage multiplier -- Changes per Surface and Type of SWEP
+	local fDamageMulti = 0.5
+	local TracerType
+	
+	
 	local trace 	= {}
 	trace.endpos 	= tr.HitPos
 	trace.start 	= tr.HitPos + PenetrationDirection
@@ -179,12 +160,10 @@ function SWEP:BulletPenetrate(bouncenum, attacker, tr, paininfo)
 	   
 	local trace 	= util.TraceLine(trace) 
 	
-	// -- Bullet didn't penetrate.
+	// -- Bullet/Laser didn't penetrate.
 	if (trace.StartSolid or trace.Fraction >= 1.0 or tr.Fraction <= 0.0) then return false end
-	
-	// -- Damage multiplier depending on surface
-	local fDamageMulti = 0.5
-	
+
+
 	if self.Primary.Ammo == "SniperPenetratedBullet" then
 		fDamageMulti = 1
 	elseif(tr.MatType == MAT_CONCRETE or tr.MatType == MAT_METAL) then
@@ -194,8 +173,6 @@ function SWEP:BulletPenetrate(bouncenum, attacker, tr, paininfo)
 	elseif (tr.MatType == MAT_FLESH or tr.MatType == MAT_ALIENFLESH) then
 		fDamageMulti = 0.9
 	end
-	
-	local newdamage = self.Primary.Damage * .6
 		
 	// -- Fire bullet from the exit point using the original trajectory
 	local penetratedbullet = {}
@@ -204,18 +181,23 @@ function SWEP:BulletPenetrate(bouncenum, attacker, tr, paininfo)
 		penetratedbullet.Dir 		= tr.Normal	
 		penetratedbullet.Spread 	= Vector(0, 0, 0)
 		penetratedbullet.Tracer	= 1
-		penetratedbullet.TracerName 	= "m9k_effect_mad_penetration_trace"
+		penetratedbullet.TracerName 	= TracerType
 		penetratedbullet.Force		= 5
-		penetratedbullet.Damage	= paininfo:GetDamage() * fDamageMulti
+		penetratedbullet.Damage	= self.Primary.Damage * fDamageMulti
 		penetratedbullet.Callback  	= function(a, b, c)	
-		local impactnum
-		if tr.MatType == MAT_GLASS then impactnum = 0 else impactnum = 1 end
-		return self:BulletPenetrate(bouncenum + impactnum, a,b,c) end	
+
+			return self:BulletPenetrate(a,b,c) end	
 		
-	timer.Simple(0, function() if attacker != nil then attacker:FireBullets(penetratedbullet) end end)
+			timer.Simple(0, function() 
+					if attacker != nil then 
+						attacker:FireBullets(penetratedbullet) 
+						
+					end 
+		end)
 
 	return true
 end
+
 
 function SWEP:DoDrop(ply)
 	if self.AllowDrop then
@@ -233,10 +215,6 @@ function SWEP:DampenDrop()
       phys:SetVelocityInstantaneous(Vector(0,0,-75) + phys:GetVelocity() * 0.001)
       phys:AddAngleVelocity(phys:GetAngleVelocity() * -0.99)
    end
-end
-
-function SWEP:Ammo1()
-   return IsValid(self.Owner) and self.Owner:GetAmmoCount(self.Primary.Ammo) or false
 end
 
 function SWEP:GetHeadshotMultiplier(victim, dmginfo)
@@ -270,6 +248,7 @@ end
 
 function SWEP:Deploy()
 	self.Weapon:SetIronsights(false)
+	return true
 end
 
 function SWEP:Reload()
