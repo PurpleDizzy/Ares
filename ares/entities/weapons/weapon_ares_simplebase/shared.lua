@@ -101,6 +101,15 @@ function SWEP:SecondaryAttack()
 
 end
 
+function SWEP:CalculateCone(curcone)
+	local cone = curcone
+	
+	if self.Weapon:GetNWBool("Ironsights") == false then cone = curcone * 2 end
+	// -- Later add Fatigue Check. Lower fatigue = shittier cone
+	
+	return cone
+end
+
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
    self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
@@ -112,6 +121,8 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
    numbul = numbul or 1
    cone   = cone   or 0.01
+   
+   cone = self:CalculateCone(cone)
 
    local bullet = {}
    bullet.Num    = numbul
@@ -131,6 +142,12 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
    -- Owner can die after firebullets
    if (not IsValid(self.Owner)) or (not self.Owner:Alive()) or self.Owner:IsNPC() then return end
+   
+   self.Owner:ViewPunch(Angle(-self.Primary.Recoil, 0, 0))
+   
+	local eyeang = self.Owner:EyeAngles()
+	eyeang.pitch = eyeang.pitch - recoil
+	self.Owner:SetEyeAngles( eyeang )
 
 end
 

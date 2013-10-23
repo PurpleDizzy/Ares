@@ -29,6 +29,6 @@ SWEP.IronSightsAng 		= Vector( 2.6, 1.37, 3.5 )
 
 
 
-SWEP.Base				= "ares_gun_base"
+SWEP.Base				= "weapon_ares_simplebase"
 SWEP.Spawnable			= true
 SWEP.AdminSpawnable 	= true

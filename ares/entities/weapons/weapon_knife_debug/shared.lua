@@ -17,7 +17,7 @@ SWEP.WorldModel			= "models/weapons/w_knife_t.mdl"
 SWEP.Primary.Sound = Sound( "Weapon_Knife.Slash" )
 
 
-SWEP.Base				= "ares_melee_base"
+SWEP.Base				= "weapon_ares_meleebase"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.Primary.Ammo = "none"
