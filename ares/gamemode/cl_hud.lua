@@ -35,13 +35,14 @@ function AresHud()
 end	
 hook.Add( "HUDPaint", "AresHud", AresHud )
 function DrawHPBar()
-	local HP = math.Clamp( LocalPlayer():Health(), 0, 100 )
+	local HPnum = LocalPlayer():Health()
+	local HP = math.Clamp( HPnum, 0, 100 )
 	draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
 	if HP ~= 0 then
 		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 40, Color( 220, 108, 108, 230) )
 		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 40, Color( 225, 255, 255, 40) )
 	end
-	draw.DrawText( HP , "HPFont", 180, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	draw.DrawText( HPnum , "HPFont", 180, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_RIGHT)
 	draw.DrawText( "HP" , "HPFont", 25, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 end
 function DrawWEPBar()
