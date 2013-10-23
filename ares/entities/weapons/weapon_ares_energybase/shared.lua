@@ -12,7 +12,7 @@ if CLIENT then
    SWEP.CSMuzzleFlashes = false
 end
 
-SWEP.Base = "ares_gun_base"
+SWEP.Base = "weapon_ares_simplebase"
 
 SWEP.Category           = "Ares"
 SWEP.Spawnable          = false

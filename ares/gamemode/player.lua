@@ -23,7 +23,7 @@ end
 function GM:PlayerLoadout(ply)
 	ply:Give("weapon_assault_debug")
 	ply:Give("weapon_laserpistol_debug")
-	ply:Give("knife")
+	ply:Give("weapon_knife_debug")
 	AmmoSpawn(ply)
 	
 	ply:SelectWeapon("weapon_assault_debug")
