@@ -56,11 +56,9 @@ function DrawWEPBar()
 		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 100, 200, 40, Color( 100,100,100,100) )
 		draw.DrawText(WEPN, "WepFont", ScrW() - 115, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 		draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
-		if WEPN == "M4A1" then
-			if CLIP ~= 0 then
-				draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color(100,100,100,255) )
-				draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, MAXC )*6.7, 40, Color( 225, 255, 255, 40) )
-			end
+		if CLIP ~= 0 then
+			draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, 30 )*6.7, 40, Color(100,100,100,255) )
+			draw.RoundedBox( 4, ScrW() - 215, ScrH() - 50, math.Clamp( CLIP, 0, 30 )*6.7, 40, Color( 225, 255, 255, 40) )
 		end
 		draw.DrawText( CLIP , "AmmoCFont", ScrW() - 150, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 		draw.DrawText( "/" , "AmmoCFont", ScrW() - 115, ScrH() - 52, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
