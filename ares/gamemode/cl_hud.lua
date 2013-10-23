@@ -48,6 +48,7 @@ end
 function DrawWEPBar()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
 	local SHOWAMMO = false
+	if WEPN == nil then return end
 	if IsValid(LocalPlayer():GetActiveWeapon()) then SHOWAMMO = LocalPlayer():GetActiveWeapon().DrawAmmo end
 	if SHOWAMMO then
 		local WEP = LocalPlayer():GetActiveWeapon()

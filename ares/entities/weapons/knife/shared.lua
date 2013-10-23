@@ -4,15 +4,13 @@ end
 
 SWEP.PrintName			= "Knife"
 SWEP.Slot				= 0 -- One less than Displayed Slot Number
-
---SWEP.Icon = "your path"
 SWEP.HoldType			= "knife"
 SWEP.Type = "melee"
 
-SWEP.Primary.Damage = 60
+SWEP.Primary.Damage		= 60
 
-
-SWEP.ViewModelFlip = false
+SWEP.ViewModelFlip 		= false
+SWEP.ViewModelFOV 		= 80
 SWEP.ViewModel			= "models/weapons/v_knife_t.mdl"
 SWEP.WorldModel			= "models/weapons/w_knife_t.mdl"
 

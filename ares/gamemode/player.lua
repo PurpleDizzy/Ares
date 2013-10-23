@@ -22,6 +22,7 @@ end
 
 function GM:PlayerLoadout(ply)
 	ply:Give("assault")
+	ply:Give("laserpistol")
 	ply:Give("knife")
 	AmmoSpawn(ply)
 	

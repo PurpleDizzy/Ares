@@ -4,8 +4,6 @@ end
 
 SWEP.PrintName			= "Laser Pistol"
 SWEP.Slot				= 1 -- One less than Displayed Slot Number
-
---SWEP.Icon = "your path
 SWEP.HoldType			= "pistol"
 SWEP.Type = "energy"
 

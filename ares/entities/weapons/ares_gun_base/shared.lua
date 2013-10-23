@@ -6,6 +6,7 @@ end
 
 if CLIENT then
    SWEP.DrawCrosshair   = false
+   SWEP.DrawAmmo		= true
    SWEP.ViewModelFOV    = 82
    SWEP.ViewModelFlip   = false
    SWEP.CSMuzzleFlashes = true
@@ -21,8 +22,8 @@ SWEP.AdminSpawnable     = false
 SWEP.Type = "firearm"
 SWEP.AllowDrop = true
 SWEP.AllowSights = true
-SWEP.Slot = 2
 SWEP.AllowPen = true
+SWEP.Slot = 2
 
 
 SWEP.Weight             = 5
@@ -57,20 +58,17 @@ SWEP.DeploySpeed = 1.4
 SWEP.IronSightsPos 		= Vector( 0, 0, 0 )
 SWEP.IronSightsAng 		= Vector( 0, 0, 0 )
 
-SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
-SWEP.ReloadAnim = ACT_VM_RELOAD
-
 
 
 function SWEP:PrimaryAttack()
 
-   if not self:CanPrimaryAttack() then return end
-   self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	if not self:CanPrimaryAttack() then return end
+	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
-   self.Weapon:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+	self.Weapon:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
 
-   self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
-   self:TakePrimaryAmmo( 1 )
+	self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
+	self:TakePrimaryAmmo( self.Primary.NumShots )
 
 end
 
@@ -105,7 +103,7 @@ end
 
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
-   self.Weapon:SendWeaponAnim(self.PrimaryAnim)
+   self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 
    self.Owner:MuzzleFlash()
    self.Owner:SetAnimation( PLAYER_ATTACK1 )
@@ -149,7 +147,6 @@ function SWEP:BulletPenetrate(attacker, tr, paininfo)
 	
 	// -- Damage multiplier -- Changes per Surface and Type of SWEP
 	local fDamageMulti = 0.5
-	local TracerType
 	
 	
 	local trace 	= {}
@@ -180,8 +177,7 @@ function SWEP:BulletPenetrate(attacker, tr, paininfo)
 		penetratedbullet.Src 		= trace.HitPos
 		penetratedbullet.Dir 		= tr.Normal	
 		penetratedbullet.Spread 	= Vector(0, 0, 0)
-		penetratedbullet.Tracer	= 1
-		penetratedbullet.TracerName 	= TracerType
+		penetratedbullet.Tracer	= 0
 		penetratedbullet.Force		= 5
 		penetratedbullet.Damage	= self.Primary.Damage * fDamageMulti
 		penetratedbullet.Callback  	= function(a, b, c)	

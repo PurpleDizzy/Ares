@@ -11,8 +11,8 @@ end
 function GM:PlayerBindPress(ply, bind, pressed)
    if not IsValid(ply) then return end
 
-   if bind == "invnext" and pressed then
-   
+   if bind == "invprev" and pressed then
+	  if not ply:Alive() or ply:Team() == TEAM_SPECTATOR then return end
 	  local curslot = ply:GetActiveWeapon().Slot
 	  
 	  for i = curslot + 1, 8 do
@@ -28,8 +28,8 @@ function GM:PlayerBindPress(ply, bind, pressed)
 	  end
 	  
       return true
-   elseif bind == "invprev" and pressed then
-   
+   elseif bind == "invnext" and pressed then
+   	  if not ply:Alive() or ply:Team() == TEAM_SPECTATOR then return end
    	  local curslot = ply:GetActiveWeapon().Slot
 	  
 	  for i =  curslot - 1,0,-1 do
@@ -46,6 +46,7 @@ function GM:PlayerBindPress(ply, bind, pressed)
    
 	return true
    elseif string.sub(bind, 1, 4) == "slot" and pressed then
+		if not ply:Alive() or ply:Team() == TEAM_SPECTATOR then return end
 		local idx = tonumber(string.sub(bind, 5, -1)) or 1
 		idx = idx - 1
 		--choose gun in idx

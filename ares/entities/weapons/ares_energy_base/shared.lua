@@ -6,6 +6,7 @@ end
 
 if CLIENT then
    SWEP.DrawCrosshair   = false
+   SWEP.DrawAmmo		= true
    SWEP.ViewModelFOV    = 82
    SWEP.ViewModelFlip   = false
    SWEP.CSMuzzleFlashes = false
@@ -17,11 +18,11 @@ SWEP.Category           = "Ares"
 SWEP.Spawnable          = false
 SWEP.AdminSpawnable     = false
 
-//SWEP.IsSilent = false -- kills silently. Not used yet, maybe later?
+
 SWEP.Type = "energy"
-SWEP.IsGrenade = false
 SWEP.AllowDrop = true
 SWEP.AllowSights = true
+SWEP.AllowPen = true
 SWEP.Slot = 2
 
 
@@ -53,31 +54,28 @@ SWEP.Secondary.ClipMax      = -1
 
 SWEP.HeadshotMultiplier = 2.7 -- haven't modified
 
-//SWEP.StoredAmmo = 0	-- Taken from ttt. Might not be used but just in case.
-//SWEP.IsDropped = false  -- ^ Used to save ammo in gun when ply drops
-
 SWEP.DeploySpeed = 1.4
 
 SWEP.IronSightsPos 		= Vector( 0, 0, 0 )
 SWEP.IronSightsAng 		= Vector( 0, 0, 0 )
 
-SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
-SWEP.ReloadAnim = ACT_VM_RELOAD
-
 
 
 function SWEP:PrimaryAttack()
-   if not self:CanPrimaryAttack() then return end
+
+	if not self:CanPrimaryAttack() then return end
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
-	self:TakePrimaryAmmo(self.Primary.NumShots)
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 	self.Weapon:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+	
 	self:ShootLaser(self.Owner, self.Primary.Damage, self.Owner:GetEyeTrace(), self.Primary.Cone, self.Primary.NumShots)
+	self:TakePrimaryAmmo(self.Primary.NumShots)
 
 end
 
 function SWEP:ShootLaser(attacker, damage, tr, spread, num)
+
+	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 	
 	local HitEnt = tr.Entity
 	
