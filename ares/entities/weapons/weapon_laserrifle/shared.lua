@@ -50,7 +50,7 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo		= "none"
 
-SWEP.Base = "ares_gun_base"
+SWEP.Base = "weapon_ares_baseenergy"
 
 /*---------------------------------------------------------
    Primary Attack

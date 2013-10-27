@@ -65,7 +65,10 @@ function SWEP:PrimaryAttack()
 	if not self:CanPrimaryAttack() then return end
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
+	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self.Owner:SetAnimation( PLAYER_ATTACK1 )
 	self.Weapon:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
+   self.Owner:MuzzleFlash()
 
 	self:ShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
 	self:TakePrimaryAmmo( self.Primary.NumShots )
@@ -112,11 +115,6 @@ end
 
 function SWEP:ShootBullet( dmg, recoil, numbul, cone )
 
-   self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-
-   self.Owner:MuzzleFlash()
-   self.Owner:SetAnimation( PLAYER_ATTACK1 )
-
    if not IsFirstTimePredicted() then return end
 
    numbul = numbul or 1
@@ -128,14 +126,16 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Num    = numbul
    bullet.Src    = self.Owner:GetShootPos()
    bullet.Dir    = self.Owner:GetAimVector()
+   print(bullet.Dir)
    bullet.Spread = Vector( cone, cone, 0 )
    bullet.Tracer = 4
    bullet.TracerName = self.Tracer or "Tracer"
    bullet.Force  = dmg
    bullet.Damage = dmg
    bullet.Callback	= function(attacker, tracedata, dmginfo) 
-		
+						print(tracedata.Normal)
 						if self.AllowPen then return self:BulletPenetrate(attacker, tracedata, dmginfo) end
+						
 					  end
 
    self.Owner:FireBullets( bullet )
@@ -165,7 +165,6 @@ function SWEP:BulletPenetrate(attacker, tr, paininfo)
 	// -- Damage multiplier -- Changes per Surface and Type of SWEP
 	local fDamageMulti = 0.5
 	
-	
 	local trace 	= {}
 	trace.endpos 	= tr.HitPos
 	trace.start 	= tr.HitPos + PenetrationDirection
@@ -174,11 +173,11 @@ function SWEP:BulletPenetrate(attacker, tr, paininfo)
 	   
 	local trace 	= util.TraceLine(trace) 
 	
-	// -- Bullet/Laser didn't penetrate.
+	// -- Bullet didn't penetrate.
 	if (trace.StartSolid or trace.Fraction >= 1.0 or tr.Fraction <= 0.0) then return false end
 
 
-	if self.Primary.Ammo == "SniperPenetratedBullet" then
+	if self.Primary.Ammo == "uselater" then
 		fDamageMulti = 1
 	elseif(tr.MatType == MAT_CONCRETE or tr.MatType == MAT_METAL) then
 		fDamageMulti = 0.3

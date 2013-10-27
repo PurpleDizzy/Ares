@@ -44,7 +44,7 @@ function DrawHPBar()
 		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 40, Color( 225, 255, 255, 40) )
 	end
 	draw.DrawText( HPnum , "HPFont", 180, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_RIGHT)
-	draw.DrawText( "HP" , "HPFont", 25, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
+	draw.DrawText( "HP" , "HPFont", 25, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_LEFT)
 end
 function DrawWEPBar()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName

@@ -12,7 +12,7 @@ if CLIENT then
    SWEP.CSMuzzleFlashes = false
 end
 
-SWEP.Base = "weapon_ares_simplebase"
+SWEP.Base = "weapon_ares_basefirearm"
 
 SWEP.Category           = "Ares"
 SWEP.Spawnable          = false
@@ -66,65 +66,51 @@ function SWEP:PrimaryAttack()
 	if not self:CanPrimaryAttack() then return end
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 
+	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self.Owner:SetAnimation( PLAYER_ATTACK1 )
 	self.Weapon:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
 	
-	self:ShootLaser(self.Owner, self.Primary.Damage, self.Owner:GetEyeTrace(), self.Primary.Cone, self.Primary.NumShots)
+	self:ShootLaser(self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone)
 	self:TakePrimaryAmmo(self.Primary.NumShots)
 
 end
 
-function SWEP:ShootLaser(attacker, damage, tr, spread, num)
+function SWEP:ShootLaser( dmg, recoil, numbul, cone )
 
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	
-	local HitEnt = tr.Entity
-	
-	local eData = EffectData()
-		eData:SetStart(tr.HitPos)
-		eData:SetOrigin(tr.HitPos)
-		eData:SetNormal(tr.Normal)
+   if not IsFirstTimePredicted() then return end
+
+   numbul = numbul or 1
+   cone   = cone   or 0.01
+   
+   cone = self:CalculateCone(cone)
+   
+   local laser = {}
+   laser.Num    = numbul
+   laser.Src    = self.Owner:GetShootPos()
+   laser.Dir    = self.Owner:GetAimVector()
+   laser.Spread = Vector( cone, cone, cone )
+   laser.Tracer = 1
+   laser.TracerName = "laser_rifle_beam"
+   laser.Force  = dmg
+   laser.Damage = dmg
+   laser.Callback	= function(attacker, tracedata, dmginfo) 
 		
-	// -- Damages for Laser
-	// -- Glass sometimes labled as Concrete for some reason
-	if not (tr.MatType == MAT_GLASS or tr.MatType == MAT_CONCRETE) then
-	
-		local dmg = DamageInfo()
-			dmg:SetDamage(damage)
-			dmg:SetAttacker(attacker)
-			dmg:SetInflictor(self.Weapon)
-			dmg:SetDamageForce(tr.Normal * 1500)
-			dmg:SetDamagePosition(tr.StartPos)
-			dmg:SetDamageType(DMG_ENERGYBEAM)
+						if self.AllowPen then return self:LaserPenetrate(attacker, tracedata, dmginfo) end
+					  end
 
-			HitEnt:DispatchTraceAttack(dmg, tr.StartPos + (tr.Normal * 3), HitEnt:GetPos())
-	end
-	
-	if tr.MatType == MAT_WOOD and SERVER then HitEnt:Ignite(10,0) end
-	
-	// -- Effects for Laser
-	if tr.MatType == MAT_METAL then
-		util.Effect("Sparks", eData)
-	elseif tr.MatType == MAT_GLASS then
-		// -- No Effects for Glass
-	elseif tr.MatType == MAT_FLESH or tr.MatType == MAT_ALIENFLESH then
-		util.Effect("BloodImpact", eData)
-		util.Decal("Blood", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
-	else
-		util.Decal("FadingScorch", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal )
-		util.Effect("Impact", eData)
-	end
-
-	
-	local LaserEffect = EffectData()
-	//LaserEffect:SetOrigin(attacker:GetShootPos())
-	LaserEffect:SetStart(attacker:GetShootPos())
-	LaserEffect:SetMagnitude(1)
-	util.Effect("laser_rifle_beam", LaserEffect)
-	
-	//self:LaserPenetrate(attacker, tr, dmg)
-	
+   self.Owner:FireLasers( laser )
+   
+   -- Owner can die after firelasers
+   if (not IsValid(self.Owner)) or (not self.Owner:Alive()) or self.Owner:IsNPC() then return end
+   
+   self.Owner:ViewPunch(Angle(-self.Primary.Recoil, 0, 0))
+   
+	local eyeang = self.Owner:EyeAngles()
+	eyeang.pitch = eyeang.pitch - recoil
+	self.Owner:SetEyeAngles( eyeang )
 
 end
+
 
 function SWEP:LaserPenetrate(attacker, tr, paininfo)
 	
@@ -142,12 +128,14 @@ function SWEP:LaserPenetrate(attacker, tr, paininfo)
 	
 	local trace 	= {}
 	trace.endpos 	= tr.HitPos
-	trace.start 	= tr.HitPos + 1
+	trace.start 	= tr.HitPos + PenetrationDirection
 	trace.mask 		= MASK_SHOT
 	trace.filter 	= {self.Owner}
 	   
 	local trace 	= util.TraceLine(trace) 
 	
+	// -- Laser didn't penetrate
+	if (trace.StartSolid or trace.Fraction >= 1.0 or tr.Fraction <= 0.0) then return false end
 	
 	if tr.MatType == MAT_CONCRETE then
 		fDamageMulti = .3
@@ -161,8 +149,24 @@ function SWEP:LaserPenetrate(attacker, tr, paininfo)
 		fDamageMulti = 1
 	end
 	
-	timer.Simple(0, self.Weapon:ShootLaser(attacker, self.Primary.Damage * fDamageMulti, trace, 0, 1))
+	// -- Fire bullet from the exit point using the original trajectory
+	local penetratedlaser = {}
+		penetratedlaser.Num 		= 1
+		penetratedlaser.Src 		= trace.HitPos
+		penetratedlaser.Dir 		= tr.Normal	
+		penetratedlaser.Spread 	= Vector(0, 0, 0)
+		penetratedlaser.Tracer	= 1
+		penetratedlaser.Force		= 5
+		penetratedlaser.Damage	= self.Primary.Damage * fDamageMulti
+		penetratedlaser.Callback  	= function(a, b, c)	
+
+			return self:LaserPenetrate(a,b,c) end	
+		
+			timer.Simple(0, function() 
+					if attacker != nil then 
+						attacker:FireLasers(penetratedlaser) 
+					end
+		end)
 	
-	return true
-			
+	return true	
 end

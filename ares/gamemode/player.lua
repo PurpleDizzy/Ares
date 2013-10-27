@@ -21,9 +21,9 @@ function GM:PlayerInitialSpawn( ply )
 end
 
 function GM:PlayerLoadout(ply)
-	ply:Give("weapon_assault_debug")
-	ply:Give("weapon_laserpistol_debug")
-	ply:Give("weapon_knife_debug")
+	ply:Give("weapon_ares_debugassault")
+	ply:Give("weapon_ares_debuglaserpistol")
+	ply:Give("weapon_ares_debugknife")
 	AmmoSpawn(ply)
 	
 	ply:SelectWeapon("weapon_assault_debug")
