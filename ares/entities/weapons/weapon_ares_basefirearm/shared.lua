@@ -126,14 +126,13 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    bullet.Num    = numbul
    bullet.Src    = self.Owner:GetShootPos()
    bullet.Dir    = self.Owner:GetAimVector()
-   print(bullet.Dir)
    bullet.Spread = Vector( cone, cone, 0 )
    bullet.Tracer = 4
    bullet.TracerName = self.Tracer or "Tracer"
    bullet.Force  = dmg
    bullet.Damage = dmg
    bullet.Callback	= function(attacker, tracedata, dmginfo) 
-						print(tracedata.Normal)
+						
 						if self.AllowPen then return self:BulletPenetrate(attacker, tracedata, dmginfo) end
 						
 					  end
