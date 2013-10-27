@@ -88,9 +88,9 @@ function SWEP:ShootLaser( dmg, recoil, numbul, cone )
    laser.Num    = numbul
    laser.Src    = self.Owner:GetShootPos()
    laser.Dir    = self.Owner:GetAimVector()
-   laser.Spread = Vector( cone, cone, cone )
+   laser.Spread = Vector( cone, cone, 0 )
    laser.Tracer = 1
-   laser.TracerName = "laser_rifle_beam"
+   laser.TracerName = "effects_ares_laserbeam"
    laser.Force  = dmg
    laser.Damage = dmg
    laser.Callback	= function(attacker, tracedata, dmginfo) 
@@ -114,7 +114,7 @@ end
 
 function SWEP:LaserPenetrate(attacker, tr, paininfo)
 	
-	local MaxPenetration = 20 // -- amount of objects in can go through
+	local MaxPenetration = 20 // -- amount of objects it can go through
 	
 	// -- Direction (and length) that we are going to penetrate
 	local PenetrationDirection = tr.Normal * MaxPenetration
@@ -156,6 +156,7 @@ function SWEP:LaserPenetrate(attacker, tr, paininfo)
 		penetratedlaser.Dir 		= tr.Normal	
 		penetratedlaser.Spread 	= Vector(0, 0, 0)
 		penetratedlaser.Tracer	= 1
+		penetratedlaser.TracerName = "effects_ares_laserbeam"
 		penetratedlaser.Force		= 5
 		penetratedlaser.Damage	= self.Primary.Damage * fDamageMulti
 		penetratedlaser.Callback  	= function(a, b, c)	

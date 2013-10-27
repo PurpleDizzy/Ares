@@ -88,11 +88,16 @@ end
 function SWEP:DryFire()
    if CLIENT and LocalPlayer() == self.Owner then
 	  if self.Type == "firearm" then
+	  
 		if self.Slot == 2 then
 			self:EmitSound( "Default.ClipEmpty_Rifle" )
 		elseif self.Type == "secondary" then
 			self:EmitSound( "Default.ClipEmpty_Pistol" )
 		end
+		
+	  elseif self.Type == "energy" then
+	  
+			self:EmitSound( "weapons/stunstick/stunstick_impact1.wav" )
 	  end
    end
    
