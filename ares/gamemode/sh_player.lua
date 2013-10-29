@@ -1,9 +1,8 @@
 local plymeta = FindMetaTable( "Player" )
-if not plymeta then return end
 
 function plymeta:FireLasers(b)
 
-	local Right = 3.65
+	local Right = 6
 	local Forward = 18
 	local Up = -3.2
 
@@ -15,14 +14,14 @@ function plymeta:FireLasers(b)
 	// -- Create the trace for the laser. KA-POW
 	tr = {}
 	tr.start = b.Src
-	tr.endpos = b.Src + newdir * 99999	-- REALLY shitty way of doing this.
-	tr.filter = self 	-- Else you'll shoot yourself each trigger pull.
-	tr.mask = MASK_SHOT	-- Not sure why I shouldn't leave this nil but meh.
+	tr.endpos = b.Src + newdir * 99999	-- REALLY shitty way of doing this.		StartPoint + (New Direction * Distance)
+	tr.filter = self 	-- Else you'll shoot yourself each trigger pull
+	tr.mask = MASK_OPAQUE -- So the first trace doesn't go through windows
 	
 	tr = util.TraceLine(tr)
 	
-	
 	local MuzzlePos = self:GetShootPos() + (self:GetRight() * Right) + (self:GetUp() * Up) + (self:GetForward() * Forward)	-- Correct the origin of Laser Shot
+
 	
 	// -- General Effect Data for multiple use
 	local eData = EffectData()
@@ -83,8 +82,46 @@ function plymeta:FireLasers(b)
 
 end
 	
+function plymeta:SetSprint(amt)
+	ares_SprintTable[self:SteamID()] = amt
+	return amt
+end
 
+function plymeta:GetSprint()
+	return ares_SprintTable[self:SteamID()]
+end
+
+function plymeta:GetSprinting()
+	if self:KeyDown(IN_RUN) then
+		return true
+	else
+		return false
+	end
+end
 
 function GM:CanPlayerEnterVehicle( player, vehicle, role )
 	return false
 end
+
+function plymeta:onSprintThink()
+	local ply = self
+	local amt = ply:GetSprint()
+	
+	if ply:KeyDown() == IN_RUN then
+		if ply:GetSprint() > 0 then
+			ply:SetSprint(math.Clamp(amt - 1, 0, 100))
+		else
+			ply:SetRunSpeed(ares_WalkSpeed)
+		end
+	elseif ply:KeyDown() != IN_RUN then
+		if ply:GetSprint() < 100 then
+			ply:SetSprint(math.Clamp(amt + 5, 0, 100))
+		end
+	end
+	
+	if ply:GetSprint() > 4 then
+		ply:SetRunSpeed(ares_RunSpeed)
+	end
+end
+
+//hook.Add("Think", "SprintThink", plymeta:onSprintThink())

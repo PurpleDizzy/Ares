@@ -1,3 +1,6 @@
+ares_WalkSpeed = 230
+ares_RunSpeed = 300
+
 function GM:PlayerInitialSpawn( ply )
 
 	ply:StripWeapons()
@@ -57,8 +60,8 @@ function GM:PlayerSpawn(ply)
 
 	-- Stop observer mode
 	ply:UnSpectate()
-	ply:SetWalkSpeed(230)
-	ply:SetRunSpeed(300)
+	ply:SetWalkSpeed(ares_WalkSpeed)
+	ply:SetRunSpeed(ares_RunSpeed)
 	
 	ply:StripWeapons()
 	ply:StripAmmo()

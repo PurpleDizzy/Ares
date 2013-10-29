@@ -7,7 +7,6 @@
 AddCSLuaFile( "cl_init.lua" ) --Tell the server that the client needs to download cl_init.lua
 AddCSLuaFile( "shared.lua" ) --Tell the server that the client needs to download shared.lua
 
-AddCSLuaFile( "cl_keys.lua" ) --Tell the server that the client needs to download cl_keys.lua
 AddCSLuaFile( "sh_player.lua" ) --Tell the server that the client needs to download player_shd.lua
 
 AddCSLuaFile( "cl_hud.lua" )	--Tell the server that the client needs to download cl_hud.lua
