@@ -6,26 +6,30 @@ end
 
 if CLIENT then
    SWEP.DrawCrosshair   = false
-   SWEP.DrawAmmo   = false
+   SWEP.DrawAmmo   		= false
    SWEP.ViewModelFOV    = 82
    SWEP.ViewModelFlip   = false
    SWEP.CSMuzzleFlashes = true
 end
 
-SWEP.Base = "ares_gun_base"
+SWEP.Base = "weapon_ares_basefirearm"
 
 SWEP.Category           = "Ares"
 SWEP.Spawnable          = false
 SWEP.AdminSpawnable     = false
 
-SWEP.IsSilent = true -- Is a suppressed weapon or kills silently
 
-SWEP.IsGrenade = false
+SWEP.Type = "melee"
+SWEP.AllowDrop = false
+SWEP.AllowSights = false
+
+SWEP.Slot = 0
+
 
 SWEP.Weight             = 5
 SWEP.AutoSwitchTo       = false
 SWEP.AutoSwitchFrom     = false
-SWEP.Slot = 0
+
 
 SWEP.Primary.Sound          = Sound( "" )
 SWEP.Primary.Recoil         = 1.5
@@ -48,11 +52,6 @@ SWEP.Secondary.ClipMax      = -1
 
 SWEP.HeadshotMultiplier = 2.7
 
-SWEP.StoredAmmo = 0
-SWEP.IsDropped = false
-
-SWEP.UseSights = false
-
 SWEP.DeploySpeed = 1.4
 
 SWEP.IronSightsPos 		= Vector( 0, 0, 0 )
@@ -60,10 +59,6 @@ SWEP.IronSightsAng 		= Vector( 0, 0, 0 )
 
 SWEP.PrimaryAnim = ACT_VM_PRIMARYATTACK
 SWEP.ReloadAnim = ACT_VM_RELOAD
-
-function SWEP:GetSlot()
-	return self.Slot -- used so the game knows not to pick up gun of same kind
-end
 
 
 function SWEP:SecondaryAttack()
@@ -73,8 +68,7 @@ end
 
 function SWEP:CanPrimaryAttack()
    if not IsValid(self.Owner) then return end
-
-
+   
    return true
 end
 
@@ -115,8 +109,6 @@ function SWEP:PrimaryAttack()
          edata:SetOrigin(tr_main.HitPos)
          edata:SetNormal(tr_main.Normal)
 
-         --edata:SetSurfaceProp(tr_main.MatType)
-         --edata:SetDamageType(DMG_CLUB)
          edata:SetEntity(hitEnt)
 
          if hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll" then
@@ -132,9 +124,8 @@ function SWEP:PrimaryAttack()
 
 
    if SERVER then
-      -- Do another trace that sees nodraw stuff like func_button
-      local tr_all = nil
-      tr_all = util.TraceLine({start=spos, endpos=sdest, filter=self.Owner})
+      local tr_main = nil
+      tr_main = util.TraceLine({start=spos, endpos=sdest, filter=self.Owner})
       
       self.Owner:SetAnimation( PLAYER_ATTACK1 )
 
@@ -151,8 +142,8 @@ function SWEP:PrimaryAttack()
          hitEnt:DispatchTraceAttack(dmg, spos + (self.Owner:GetAimVector() * 3), sdest)
       else
          -- See if our nodraw trace got the goods
-         if tr_all.Entity and tr_all.Entity:IsValid() then
-            self:OpenEnt(tr_all.Entity)
+         if tr_main.Entity and tr_main.Entity:IsValid() then
+            self:OpenEnt(tr_main.Entity)
          end
       end
    end

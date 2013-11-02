@@ -1,3 +1,6 @@
+ares_WalkSpeed = 230
+ares_RunSpeed = 300
+
 function GM:PlayerInitialSpawn( ply )
 
 	ply:StripWeapons()
@@ -21,9 +24,31 @@ function GM:PlayerInitialSpawn( ply )
 end
 
 function GM:PlayerLoadout(ply)
-	ply:Give("assault")
-	ply:GiveAmmo(999,"pistol")
+	ply:Give("weapon_ares_debugassault")
+	ply:Give("weapon_ares_debuglaserpistol")
+	ply:Give("weapon_ares_debugknife")
+	AmmoSpawn(ply)
+	
+	ply:SelectWeapon("weapon_assault_debug")
 end
+
+// -- Give proper ammo to each spawning player
+function AmmoSpawn(ply)
+	local amt = 1
+	for k,v in pairs(ply:GetWeapons()) do
+		if v.Slot == 2 then
+			amt = 4
+		elseif v.Slot == 1 then
+			amt = 3
+		end
+		
+		if v.Primary.Ammo == "none" or v.Primary.Ammo == nil then return end
+		
+		ply:GiveAmmo( amt * v.Primary.DefaultClip, v.Primary.Ammo)
+		
+	end
+end
+
 
 function GM:PlayerSpawn(ply)
 	if  ply:Team() == TEAM_SPECTATOR or ply:Team() == TEAM_UNASSIGNED  then
@@ -35,33 +60,25 @@ function GM:PlayerSpawn(ply)
 
 	-- Stop observer mode
 	ply:UnSpectate()
-	ply:SetWalkSpeed(230)
-	ply:SetRunSpeed(300)
+	ply:SetWalkSpeed(ares_WalkSpeed)
+	ply:SetRunSpeed(ares_RunSpeed)
 	
+	ply:StripWeapons()
+	ply:StripAmmo()
 	self:PlayerLoadout(ply)
-end
-
-local ShouldDropWeapon = true
-
-local function ToggleDropWeapon(ply)
-	if ShouldDropWeapon then
-		ply:PrintMessage(HUD_PRINTNOTIFY,"Weapon drop disabled")
-		ShouldDropWeapon = false
-	else
-		ply:PrintMessage(HUD_PRINTNOTIFY, "Weapon drop enabled!")
-		ShouldDropWeapon = true
-	end
+	ply:AllowImmediateDecalPainting(true)
 end
 
 local function PlayerDropWeapon(ply)
-	if ShouldDropWeapon and ply:GetActiveWeapon():IsValid() then
-		ply:DropWeapon(ply:GetActiveWeapon())
+	if ply:GetActiveWeapon():IsValid() then
+		ply:GetActiveWeapon():DoDrop()
 	end
 end
 
 local function DropAllWeapons(ply)
 	for k,v in pairs(ply:GetWeapons()) do
-		ply:DropWeapon(v)
+		v:DoDrop()
+		v:DampenDrop()
 	end
 end
 
@@ -69,6 +86,8 @@ hook.Add("DoPlayerDeath", "Player.DropAllWeapons", DropAllWeapons)
 
 concommand.Add("player_dropweapon", PlayerDropWeapon)
 //concommand.Add( "player_dropweapon_toggle", ToggleDropWeapon)
+
+concommand.Add("cleanmap", function() game.CleanUpMap() end)
 
 function GM:PlayerDeathSound()
 	-- Return true to not play the default sounds
@@ -91,7 +110,7 @@ function GM:PlayerCanPickupWeapon( ply, ent )
 	weptable = ply:GetWeapons()
 	
 	for k,v in pairs(weptable) do
-		if v:GetSlot() == ent:GetSlot() then return false end
+		if v.Slot == ent.Slot then return false end
 	end
 	
 	return true
@@ -101,4 +120,22 @@ util.AddNetworkString( "weaponSelect" )
 
 net.Receive("weaponSelect", function(len, ply)
 	ply:SelectWeapon(net.ReadString())
+end)
+
+
+util.AddNetworkString( "SprintBool" )
+
+net.Receive("SprintBool", function(len, ply)
+	//print('sprintbool is recieved')
+	if net.ReadString() == "true" then	-- Gets if the ply is Sprinting
+	
+		local amt = ply:Sprint()
+	
+		if amt > 0 then
+			ply:SetSprint(math.Clamp(amt - 1, 0, 100))
+		else
+			ply:SetRunSpeed(ares_WalkSpeed)		-- if ply is out of sprint, set their sprint speed to walk-speed
+		end
+		
+	end
 end)

@@ -2,11 +2,31 @@
 {
 	"base"		"base"
 	"title"		"CODENAME: ARES"
-	"maps"		""
+	"maps"		"^ares_"
 	"menusystem"	"1"
+	//"workshopid"	""
 
 	"settings"
 	{
-		// TODO: put some settings here
+		1
+		{
+			"name"		"ares_mode"
+			"text"		"Mode"
+			"help"		"The GameType you want to play"
+			"type"		"text"
+			"default"	"deathmatch"
+		}
+		
+		
+		2
+		{
+			"name"		"ares_teams"
+			"text"		"Teams"
+			"help"		"Are teams allowed?"
+			"type"		"numeric"
+			"default"	"0"
+			
+
+		}
 	}
 }

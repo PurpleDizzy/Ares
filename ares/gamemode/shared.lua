@@ -17,42 +17,17 @@ GM.Author 		= "JHeim286 && Purple Dizzy"
 //GM.Website 		= "nil"
 GM.TeamBased 	= true
 
+function GM:Initialize()
+	
+end
+
+
 
 --[[---------------------------------------------------------
    Name: gamemode:PlayerHurt( )
    Desc: Called when a player is hurt.
 -----------------------------------------------------------]]
 function GM:PlayerHurt( player, attacker, healthleft, healthtaken )
-end
-
-
---[[---------------------------------------------------------
-   Name: gamemode:KeyPress( )
-   Desc: Player pressed a key (see IN enums)
------------------------------------------------------------]]
-function GM:KeyPress( ply, key )
-   if not IsFirstTimePredicted() then return end
-
-	if not IsValid(ply) then return end
-	if key == IN_ATTACK2 then
-		local wep = ply:GetActiveWeapon()
-		wep:IronSights()
-	end
-end
-
-
---[[---------------------------------------------------------
-   Name: gamemode:KeyRelease( )
-   Desc: Player released a key (see IN enums)
------------------------------------------------------------]]
-function GM:KeyRelease( ply, key )
-   if not IsFirstTimePredicted() then return end
-
-	if not IsValid(ply) then return end
-	if key == IN_ATTACK2 then
-		local wep = ply:GetActiveWeapon()
-		wep:IronSights()
-	end
 end
 
 
@@ -69,6 +44,7 @@ end
    Desc: Player's STEAMID has been authed
 -----------------------------------------------------------]]
 function GM:PlayerAuthed( ply, SteamID, UniqueID )
+	ply:SetSprint(100)
 end
 
 
@@ -161,6 +137,7 @@ function GM:CreateTeams()
 	team.SetUp( TEAM_BLUE, "Imperials", Color( 0, 90, 210 ) )
 	team.SetSpawnPoint( TEAM_BLUE, "info_terrorist" ) -- <-- This would be info_terrorist or some entity that is in your map
 	
+	team.SetUp( TEAM_SPECTATOR, "Spectator", Color( 50, 50, 50 ) )
 	team.SetSpawnPoint( TEAM_SPECTATOR, "worldspawn" ) 
 	
 end
@@ -254,3 +231,5 @@ function GM:OnViewModelChanged( vm, old, new )
 	end
 
 end
+
+
