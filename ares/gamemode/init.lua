@@ -15,7 +15,7 @@ AddCSLuaFile( 'cl_hud.lua' ) -- Tells the client to load the hud
 include( 'shared.lua' ) --Tell the server to load shared.lua
 include( 'player.lua' )
 include( 'sh_player.lua' )
-
+include( 'fatigue.lua' )
 
 --------------------------------------------------------------
 --------------------------------------------------------------
