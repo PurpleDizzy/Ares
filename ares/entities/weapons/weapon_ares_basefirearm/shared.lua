@@ -113,8 +113,19 @@ function SWEP:CalculateCone(curcone)
 	local cone = curcone
 	
 	if self.Weapon:GetNWBool("Ironsights") == false then cone = curcone * 2 end
-	// -- Later add Fatigue Check. Lower fatigue = shittier cone
+	if self.Owner:Fatigue() >=30 then
+		local mult = self.Owner:Fatigue()
+		
+		if mult < 1 then mult = 1 end
+		
+		mult = (30 / mult) / 10
+		
+		cone = cone * mult
+	end
 	
+	if self.Owner:Sprinting() then
+		cone = cone * 5
+	end
 	return cone
 end
 

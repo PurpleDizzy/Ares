@@ -28,6 +28,7 @@ function AresHud()
 		draw.DrawText(T, "TeamFont", 110, ScrH() - 99, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
 		DrawHPBar()
 		DrawWEPBar()
+		DrawSprintBar()
 	else
 		draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, TC )
 		draw.DrawText(T, "TeamFont", 110, ScrH() - 50, Color( 0, 0, 0, 255),TEXT_ALIGN_CENTER)
@@ -46,6 +47,18 @@ function DrawHPBar()
 	draw.DrawText( HPnum , "HPFont", 180, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_RIGHT)
 	draw.DrawText( "HP" , "HPFont", 25, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_LEFT)
 end
+
+function DrawSprintBar()	// -- DEBUG SPRINT BAR
+	local Sprint = LocalPlayer():Fatigue()
+	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, Color(40, 40, 40, 50))
+	if Sprint != 0 then
+		draw.RoundedBox( 4, 10, ScrH() - 150, math.Clamp( Sprint, 0, 200) * 2, 40, Color( 220, 108, 108, 230) )
+		draw.RoundedBox( 4, 10, ScrH() - 150, math.Clamp( Sprint, 0, 200) * 2, 40, Color( 225, 225, 225, 40) )
+	end
+	draw.DrawText( math.Round(Sprint, 0), "HPFont", 180, ScrH() - 140, Color( 0, 0, 0, 255), TEXT_ALIGN_RIGHT)
+	draw.DrawText( "Fatigue", "HPFont", 25, ScrH() - 140, Color( 0, 0, 0, 255), TEXT_ALIGN_LEFT)
+end
+
 function DrawWEPBar()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
 	local SHOWAMMO = false

@@ -1,4 +1,4 @@
-local plymeta = FindMetaTable( "Player" )
+local plymeta = FindMetaTable( "Player" )  -- Grabs the Player metatable for doing classes :D
 
 function plymeta:FireLasers(b)
 
@@ -12,21 +12,22 @@ function plymeta:FireLasers(b)
 	local newdir = (b.Dir + rand)
 
 	// -- Create the trace for the laser. KA-POW
-	tr = {}
-	tr.start = b.Src
-	tr.endpos = b.Src + newdir * 99999	-- REALLY shitty way of doing this.		StartPoint + (New Direction * Distance)
-	tr.filter = self 	-- Else you'll shoot yourself each trigger pull
-	tr.mask = MASK_OPAQUE -- So the first trace doesn't go through windows
+	trace = {}
+	trace.start = b.Src
+	trace.endpos = b.Src + newdir * 99999	-- REALLY shitty way of doing this.		StartPoint + (New Direction * Distance)
+	trace.filter = self 	-- Else you'll shoot yourself each trigger pull
+	trace.mask = nil -- So the first trace doesn't go through windows
 	
-	tr = util.TraceLine(tr)
+	tr = util.TraceLine(trace)
 	
 	local MuzzlePos = self:GetShootPos() + (self:GetRight() * Right) + (self:GetUp() * Up) + (self:GetForward() * Forward)	-- Correct the origin of Laser Shot
 
 	
 	// -- General Effect Data for multiple use
 	local eData = EffectData()
-		eData:SetStart(tr.HitPos)
-		eData:SetOrigin(MuzzlePos)
+		eData:SetStart(tr.StartPos)
+		eData:SetOrigin(tr.HitPos)
+		eData:SetScale(1)
 		eData:SetNormal(tr.Normal)
 		
 	// -- THEM LASER BEAMS
@@ -34,22 +35,32 @@ function plymeta:FireLasers(b)
 		util.Effect(b.TracerName, eData)
 	end
 	
-	// -- Effects for laser-hit NOT WORKING on ENTITIES.
-	if tr.MatType == MAT_METAL then
-		util.Effect("Sparks", eData)
-	elseif tr.MatType == MAT_FLESH or tr.MatType == MAT_ALIENFLESH then
-		util.Effect("BloodImpact", eData)
-		util.Decal("Blood", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
-	end
+	local hitsomething = true
 	
-	// -- Creates Scorches when hits world no matter what.
-	// -- If it hits non-world glass then ignore dat shit.
-	if tr.HitWorld then
-		util.Decal("FadingScorch", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal )
+	//while hitsomething == true do
+	
+	// -- Effects for laser-hit NOT WORKING on ENTITIES.
+	if tr.MatType == MAT_METAL or tr.MatType == MAT_GRATE then
+		util.Effect("HelicopterImpact", eData)
+		util.Decal("Impact.Metal", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif tr.MatType == MAT_FLESH then
+		util.Effect("BloodImpact", eData)
+		util.Decal("BloodyFlesh", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif tr.MatType == MAT_ALIENFLESH then
+		util.Effect("BloodImpact", eData)
+		util.Decal("AlienFlesh", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif tr.MatType == MAT_DIRT or tr.MatType == MAT_SAND then
 		util.Effect("Impact", eData)
-	elseif not tr.MatType == MAT_GLASS then 
-		util.Decal("FadingScorch", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal )
+		util.Decal("Impact.Sand", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif tr.MatType == MAT_CONCRETE then
 		util.Effect("Impact", eData)
+		util.Decal("Impact.Concrete", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif MAT_WOOD then
+		util.Effect("Impact", eData)
+		util.Decal("Impact.Wood", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+//	else
+//		util.Effect("Impact", eData)
+//		util.Decal("FadingScorch", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal )
 	end
 	
 		
@@ -78,50 +89,48 @@ function plymeta:FireLasers(b)
 	
 	end
 	
-	return b.Callback(self, tr, dmginfo)
-
-end
+	local blahtrace = {}
+	blahtrace.start = tr.HitPos
+	blahtrace.endpos = tr.HitPos + tr.Normal * 99999
+	blahtrace.filter = self
 	
-function plymeta:SetSprint(amt)
-	ares_SprintTable[self:SteamID()] = amt
-	return amt
-end
-
-function plymeta:GetSprint()
-	return ares_SprintTable[self:SteamID()]
-end
-
-function plymeta:GetSprinting()
-	if self:KeyDown(IN_RUN) then
-		return true
-	else
-		return false
+	tr = util.TraceLine(blahtrace)
+	
+	if not tr.Hit then
+		hitsomething = false
 	end
+	
+	
+	//return b.Callback(self, tr, dmginfo)
+//end
 end
+
+function plymeta:GetMaxFatigue()
+	return 100
+end
+
+function plymeta:SetFatigue(amt)
+	self.FatigueVal = amt --FatigueVal takes on the new amount
+end
+
+function plymeta:Fatigue()
+	if self.FatigueVal == nil then self.FatigueVal = self:GetMaxFatigue() end
+	return self.FatigueVal	-- Return the Fatigue Amount
+end
+
+function plymeta:Sprinting()
+	if not self:Alive() then return end
+	
+	if self:KeyDown(IN_SPEED) and self:OnGround() then
+		return true
+	end
+	
+	return false
+end
+
+
+
 
 function GM:CanPlayerEnterVehicle( player, vehicle, role )
 	return false
 end
-
-function plymeta:onSprintThink()
-	local ply = self
-	local amt = ply:GetSprint()
-	
-	if ply:KeyDown() == IN_RUN then
-		if ply:GetSprint() > 0 then
-			ply:SetSprint(math.Clamp(amt - 1, 0, 100))
-		else
-			ply:SetRunSpeed(ares_WalkSpeed)
-		end
-	elseif ply:KeyDown() != IN_RUN then
-		if ply:GetSprint() < 100 then
-			ply:SetSprint(math.Clamp(amt + 5, 0, 100))
-		end
-	end
-	
-	if ply:GetSprint() > 4 then
-		ply:SetRunSpeed(ares_RunSpeed)
-	end
-end
-
-//hook.Add("Think", "SprintThink", plymeta:onSprintThink())

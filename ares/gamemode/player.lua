@@ -66,6 +66,7 @@ function GM:PlayerSpawn(ply)
 	ply:StripWeapons()
 	ply:StripAmmo()
 	self:PlayerLoadout(ply)
+	ply:AllowImmediateDecalPainting(true)
 end
 
 local function PlayerDropWeapon(ply)
@@ -86,7 +87,7 @@ hook.Add("DoPlayerDeath", "Player.DropAllWeapons", DropAllWeapons)
 concommand.Add("player_dropweapon", PlayerDropWeapon)
 //concommand.Add( "player_dropweapon_toggle", ToggleDropWeapon)
 
-concommand.Add("cleanmap", game.CleanUpMap())
+concommand.Add("cleanmap", function() game.CleanUpMap() end)
 
 function GM:PlayerDeathSound()
 	-- Return true to not play the default sounds
@@ -119,4 +120,10 @@ util.AddNetworkString( "weaponSelect" )
 
 net.Receive("weaponSelect", function(len, ply)
 	ply:SelectWeapon(net.ReadString())
+end)
+
+util.AddNetworkString("RunSpeed")
+
+net.Receive("RunSpeed", function(len, ply)
+	ply:SetRunSpeed(net.ReadString())
 end)

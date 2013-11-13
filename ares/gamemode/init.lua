@@ -7,9 +7,11 @@
 AddCSLuaFile( "cl_init.lua" ) --Tell the server that the client needs to download cl_init.lua
 AddCSLuaFile( "shared.lua" ) --Tell the server that the client needs to download shared.lua
 
-AddCSLuaFile( "sh_player.lua" ) --Tell the server that the client needs to download player_shd.lua
+AddCSLuaFile( "sh_player.lua" ) --Tell the server that the client needs to download sh_player.lua
 
+AddCSLuaFile( "cl_fatigue.lua" ) -- Tell the server that the client needs to download cl_fatigue.lua
 AddCSLuaFile( "cl_hud.lua" )	--Tell the server that the client needs to download cl_hud.lua
+AddCSLuaFile( "cl_keys.lua" )
 AddCSLuaFile( "cl_scoreboard.lua" )	--Tell the server that the client needs to download cl_hud.lua
 AddCSLuaFile( "cl_settingmenu.lua" )	--Tell the server that the client needs to download cl_hud.lua
  

@@ -22,7 +22,7 @@ SWEP.ViewModelFOV = 75
 SWEP.ViewModel  = "models/weapons/v_pist_fiveseven.mdl"
 SWEP.WorldModel = "models/weapons/w_pist_fiveseven.mdl"
 
-SWEP.Primary.Sound = Sound( "weapons/gauss/fire1.wav" )
+SWEP.Primary.Sound = Sound( "" )
 SWEP.IronSightsPos = Vector(4.5, 0, 3.4)
 SWEP.IronSightsAng = Vector(0, 0, 0)
 
