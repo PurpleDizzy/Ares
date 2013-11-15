@@ -1,11 +1,14 @@
+if CLIENT then
 function onSprintThink(ply, move)	-- Sprint Function, run every tick, ONLY ON CLIENT
 
 	if not IsValid(ply) then return end
 	if not ply:Alive() then return end
-	if ply:Team() == TEAM_SPECTATOR then return end
 	
-	if ply:Sprinting() then	-- Gets if the ply is Sprinting
-		if move:GetForwardSpeed() == 0 and move:GetSideSpeed() == 0 then return end
+	if ply:Sprinting() and ply:KeyDown(IN_ATTACK2) then
+		net.Start("RunSpeed")
+			net.WriteString("230")
+		net.SendToServer()
+	elseif ply:Sprinting() then	-- Gets if the ply is Sprinting
 		if ply:Fatigue() >= 0 then
 			ply:SetFatigue(math.Clamp(ply:Fatigue() - .1, 0, 100))
 		end
@@ -15,9 +18,8 @@ function onSprintThink(ply, move)	-- Sprint Function, run every tick, ONLY ON CL
 			net.SendToServer()			-- so it's gotta be handled all client until very end.
 		end
 	else
-		
-		if ply:Fatigue() <= 100 and (not ply:Sprinting()) then
-			timer.Simple(0, function() ply:SetFatigue(math.Clamp(ply:Fatigue() + .08, 0, 100)) end)
+		if ply:Fatigue() <= 100 and ply:OnGround() then
+			timer.Simple(1, function() ply:SetFatigue(math.Clamp(ply:Fatigue() + .08, 0, 100)) end)
 		end
 		if ply:Fatigue() > 0 then
 			net.Start("RunSpeed")
@@ -31,6 +33,7 @@ end
 
 hook.Add("Move", "SprintThink", onSprintThink) -- Every tick the Sprint Function is run CLIENTSIDE ONLY
 
+end
 
 function FatigueMVision() 
 	local ply = LocalPlayer() 

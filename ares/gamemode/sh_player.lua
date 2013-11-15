@@ -30,11 +30,6 @@ function plymeta:FireLasers(b)
 		eData:SetScale(1)
 		eData:SetNormal(tr.Normal)
 		
-	local ImpactData = EffectData()
-		ImpactData:SetOrigin(tr.HitPos)
-		ImpactData:SetNormal(tr.HitPos)
-		ImpactData:SetScale(20)
-		
 	// -- THEM LASER BEAMS
 	if b.TracerName != nil then
 		util.Effect(b.TracerName, eData)
@@ -45,22 +40,29 @@ function plymeta:FireLasers(b)
 	//while hitsomething == true do
 	
 	// -- Effects for laser-hit NOT WORKING on ENTITIES.
-
-	print(tr.SurfaceProps)
-	
-	if tr.SurfaceProps == 21 or tr.SurfaceProps == 17 or tr.SurfaceProps == 18 then
-		util.Effect("Impact", ImpactData)
-		util.Decal("Impact.Wood", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
-	elseif tr.SurfaceProps == 3 or tr.SurfaceProps == 2 or tr.SurfaceProps == 66 or tr.SurfaceProps == 8 or tr.SurfaceProps == 7 then
-		util.Effect("Sparks", ImpactData)
-		util.Decal("Impact.Metal", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
-	elseif tr.SurfaceProps == 63 then
-		util.Effect("Impact", ImpactData)
-		util.Decal("Impact.Glass", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
-	elseif tr.SurfaceProps != 28 then
+	if tr.MatType == MAT_METAL or tr.MatType == MAT_GRATE then
+		util.Effect("HelicopterImpact", eData)
+		util.Decal("Impact.Metal", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif tr.MatType == MAT_FLESH then
+		util.Effect("BloodImpact", eData)
+		util.Decal("BloodyFlesh", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif tr.MatType == MAT_ALIENFLESH then
+		util.Effect("BloodImpact", eData)
+		util.Decal("AlienFlesh", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif tr.MatType == MAT_DIRT or tr.MatType == MAT_SAND then
 		util.Effect("Impact", eData)
-		util.Decal("Impact.Concrete", tr.HitPos + tr.HitNormal, tr.HitPos - tr.HitNormal)
+		util.Decal("Impact.Sand", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif tr.MatType == MAT_CONCRETE then
+		util.Effect("Impact", eData)
+		util.Decal("Impact.Concrete", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+	elseif MAT_WOOD then
+		util.Effect("Impact", eData)
+		util.Decal("Impact.Wood", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal)
+//	else
+//		util.Effect("Impact", eData)
+//		util.Decal("FadingScorch", tr.HitPos + tr.Normal, tr.HitPos - tr.Normal )
 	end
+	
 		
 	if SERVER then
 		
@@ -87,6 +89,18 @@ function plymeta:FireLasers(b)
 	
 	end
 	
+	local blahtrace = {}
+	blahtrace.start = tr.HitPos
+	blahtrace.endpos = tr.HitPos + tr.Normal * 99999
+	blahtrace.filter = self
+	
+	tr = util.TraceLine(blahtrace)
+	
+	if not tr.Hit then
+		hitsomething = false
+	end
+	
+	
 	//return b.Callback(self, tr, dmginfo)
 //end
 end
@@ -105,10 +119,9 @@ function plymeta:Fatigue()
 end
 
 function plymeta:Sprinting()
-	if self:Team() == TEAM_SPECTATOR then return end
 	if not self:Alive() then return end
 	
-	if self:KeyDown(IN_SPEED) and (not self:KeyDown(IN_JUMP)) and (not self:KeyDown(IN_ATTACK2)) then
+	if self:KeyDown(IN_SPEED) and self:OnGround() then
 		return true
 	end
 	

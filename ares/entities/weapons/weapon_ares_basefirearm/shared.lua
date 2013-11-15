@@ -113,7 +113,7 @@ function SWEP:CalculateCone(curcone)
 	local cone = curcone
 	
 	if self.Weapon:GetNWBool("Ironsights") == false then cone = curcone * 2 end
-	if self.Owner:Fatigue() <=30 then
+	if self.Owner:Fatigue() >=30 then
 		local mult = self.Owner:Fatigue()
 		
 		if mult < 1 then mult = 1 end
@@ -158,13 +158,11 @@ function SWEP:ShootBullet( dmg, recoil, numbul, cone )
    -- Owner can die after firebullets
    if (not IsValid(self.Owner)) or (not self.Owner:Alive()) or self.Owner:IsNPC() then return end
    
-	self.Owner:ViewPunch(Angle(-self.Primary.Recoil, 0, 0))
+   self.Owner:ViewPunch(Angle(-self.Primary.Recoil, 0, 0))
    
-   if SERVER then
-		local eyeang = self.Owner:EyeAngles()
-		eyeang.pitch = eyeang.pitch - recoil
-		self.Owner:SetEyeAngles( eyeang )
-	end 
+	local eyeang = self.Owner:EyeAngles()
+	eyeang.pitch = eyeang.pitch - recoil
+	self.Owner:SetEyeAngles( eyeang )
 
 end
 

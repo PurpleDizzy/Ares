@@ -62,14 +62,6 @@ function GM:PlayerBindPress(ply, bind, pressed)
 	elseif bind == "+zoom" then
 
 		return true
-	elseif bind == "+speed" then
-		if ply:KeyDown(IN_ATTACK2) then return true end -- Prevents player from ADS then Sprint
-		
-		return false
-	elseif bind == "+attack2" then
-		if ply:KeyDown(IN_SPEED) then return true end -- Prevents player from Sprinting then ADS
-		
-		return false
 	end
 end
 
