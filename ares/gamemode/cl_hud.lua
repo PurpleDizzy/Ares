@@ -41,23 +41,20 @@ function DrawHPBar()
 	if HPnum < 0 then HPnum = 0 end
 	draw.RoundedBox( 4, 10, ScrH() - 50, 200, 40, Color( 40, 40 ,40, 50) )
 	if HP ~= 0 then
-		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 40, Color( 220, 108, 108, 230) )
-		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 40, Color( 225, 255, 255, 40) )
+		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 30, Color( 220, 108, 108, 230) )
+		draw.RoundedBox( 4, 10, ScrH() - 50, math.Clamp( HP, 0, 200 )*2, 30, Color( 225, 255, 255, 40) )
 	end
-	draw.DrawText( HPnum , "HPFont", 180, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_RIGHT)
-	draw.DrawText( "HP" , "HPFont", 25, ScrH() - 40, Color( 0, 0, 0, 255),TEXT_ALIGN_LEFT)
+	draw.DrawText( HPnum , "HPFont", 180, ScrH() - 45, Color( 0, 0, 0, 255),TEXT_ALIGN_RIGHT)
+	draw.DrawText( "HP" , "HPFont", 25, ScrH() - 45, Color( 0, 0, 0, 255),TEXT_ALIGN_LEFT)
 end
 
 function DrawSprintBar()	// -- DEBUG SPRINT BAR
 	local Sprint = LocalPlayer():Fatigue()
-	draw.RoundedBox( 4, 10, ScrH() - 100, 200, 40, Color(40, 40, 40, 50))
 	if Sprint != 0 then
-		draw.RoundedBox( 4, 10, ScrH() - 150, math.Clamp( Sprint, 0, 200) * 2, 40, Color( 220, 108, 108, 230) )
-		draw.RoundedBox( 4, 10, ScrH() - 150, math.Clamp( Sprint, 0, 200) * 2, 40, Color( 225, 225, 225, 40) )
+		draw.RoundedBox( 4, 10, ScrH() -20, math.Clamp( Sprint, 0, 200) * 2, 10, Color( 74, 150, 61, 210) )
 	end
-	draw.DrawText( math.Round(Sprint, 0), "HPFont", 180, ScrH() - 140, Color( 0, 0, 0, 255), TEXT_ALIGN_RIGHT)
-	draw.DrawText( "Fatigue", "HPFont", 25, ScrH() - 140, Color( 0, 0, 0, 255), TEXT_ALIGN_LEFT)
 end
+
 
 function DrawWEPBar()
 	local WEPN = LocalPlayer():GetActiveWeapon().PrintName
