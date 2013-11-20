@@ -71,7 +71,7 @@ function SWEP:PrimaryAttack()
 	self.Weapon:EmitSound( self.Primary.Sound, self.Primary.SoundLevel )
 	
 	self:ShootLaser(self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone)
-	self:TakePrimaryAmmo(self.Primary.NumShots)
+//	self:TakePrimaryAmmo(self.Primary.NumShots)
 
 end
 
@@ -95,7 +95,7 @@ function SWEP:ShootLaser( dmg, recoil, numbul, cone )
    laser.Damage = dmg
    laser.Callback	= function(attacker, tracedata, dmginfo) 
 		
-						if self.AllowPen then return self:LaserPenetrate(attacker, tracedata, dmginfo) end
+						//if self.AllowPen then return self:LaserPenetrate(attacker, tracedata, dmginfo) end
 					  end
 
    self.Owner:FireLasers( laser )
