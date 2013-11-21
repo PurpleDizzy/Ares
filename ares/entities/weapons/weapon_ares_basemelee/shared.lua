@@ -140,11 +140,6 @@ function SWEP:PrimaryAttack()
          dmg:SetDamageType(DMG_CLUB)
 
          hitEnt:DispatchTraceAttack(dmg, spos + (self.Owner:GetAimVector() * 3), sdest)
-      else
-         -- See if our nodraw trace got the goods
-         if tr_main.Entity and tr_main.Entity:IsValid() then
-            self:OpenEnt(tr_main.Entity)
-         end
       end
    end
 

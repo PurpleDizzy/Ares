@@ -1,2 +1,1 @@
--Laser SWEPS don't leave Decals/Effects on Entities > only World
--Laser SWEPS don't do dam to ents after pen'ing other non-world ents
+-Double laser when pen'ning

@@ -59,7 +59,7 @@ end
 		Smoke:SetColor( 105,100,90 )
 		end
 	end
-
+/*
 	for i=0, 10*self.Scale do
 		local Debris = self.Emitter:Add( "effects/fleck_cement"..math.random(1,2), self.Pos )
 		if (Debris) then
@@ -72,12 +72,12 @@ end
 		Debris:SetRollDelta( math.Rand(-5, 5) )			
 		Debris:SetAirResistance( 50 ) 			 			
 		Debris:SetColor( 105,100,90 )
-		Debris:SetGravity( Vector( 0, 0, -600) ) 
+		Debris:SetGravity( Vector( 0, 0, 0) ) 
 		Debris:SetCollide( true )
 		Debris:SetBounce( 1 )			
 		end
 	end
-	
+*/	
 
  end
  

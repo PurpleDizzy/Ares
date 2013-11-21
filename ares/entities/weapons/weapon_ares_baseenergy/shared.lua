@@ -95,7 +95,7 @@ function SWEP:ShootLaser( dmg, recoil, numbul, cone )
    laser.Damage = dmg
    laser.Callback	= function(attacker, tracedata, dmginfo) 
 		
-						//if self.AllowPen then return self:LaserPenetrate(attacker, tracedata, dmginfo) end
+						if self.AllowPen then self:LaserPenetrate(attacker, tracedata, dmginfo) end
 					  end
 
    self.Owner:FireLasers( laser )
