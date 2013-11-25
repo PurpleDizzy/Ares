@@ -1,6 +1,6 @@
 include( 'shared.lua' ) --Tell the client to load shared.lua
 
-include( 'cl_fatigue.lua' )
+include( 'cl_stamina.lua' )
 include( 'cl_hud.lua' )
 include( 'cl_keys.lua' )
 include( 'cl_scoreboard.lua' )

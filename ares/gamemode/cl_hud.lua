@@ -49,7 +49,7 @@ function DrawHPBar()
 end
 
 function DrawSprintBar()	// -- DEBUG SPRINT BAR
-	local Sprint = LocalPlayer():Fatigue()
+	local Sprint = LocalPlayer():Stamina()
 	if Sprint != 0 then
 		draw.RoundedBox( 4, 10, ScrH() -20, math.Clamp( Sprint, 0, 200) * 2, 10, Color( 74, 150, 61, 210) )
 	end

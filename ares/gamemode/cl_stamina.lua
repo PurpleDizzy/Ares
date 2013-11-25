@@ -6,22 +6,22 @@ function onSprintThink(ply, move)	-- Sprint Function, run every tick, ONLY ON CL
 	
 	if ply:Sprinting() then	-- Gets if the ply is Sprinting
 		if move:GetForwardSpeed() == 0 and move:GetSideSpeed() == 0 then return end
-		if ply:Fatigue() >= 0 then
-			ply:SetFatigue(math.Clamp(ply:Fatigue() - .1, 0, 100))
+		if ply:Stamina() >= 0 then
+			ply:SetStamina(math.Clamp(ply:Stamina() - .1, 0, 100))
 		end
-		if ply:Fatigue() <= 10 then
-			net.Start("RunSpeed")
-				net.WriteString("230")	-- Variables on both Client and Server create HUGE lag
+		if ply:Stamina() <= 0 then
+			net.Start("DoSprint")
+				net.WriteBit(false)	-- Variables on both Client and Server create HUGE lag
 			net.SendToServer()			-- so it's gotta be handled all client until very end.
 		end
 	else
 		
-		if ply:Fatigue() <= 100 and (not ply:Sprinting()) then
-			timer.Simple(0, function() ply:SetFatigue(math.Clamp(ply:Fatigue() + .08, 0, 100)) end)
+		if ply:Stamina() <= 100 and (not ply:Sprinting()) then
+			timer.Simple(0, function() ply:SetStamina(math.Clamp(ply:Stamina() + .08, 0, 100)) end)
 		end
-		if ply:Fatigue() > 0 then
-			net.Start("RunSpeed")
-				net.WriteString("300")
+		if ply:Stamina() > 0 then
+			net.Start("DoSprint")
+				net.WriteBit(true)
 			net.SendToServer()
 		end
 	end
@@ -32,19 +32,19 @@ end
 hook.Add("Move", "SprintThink", onSprintThink) -- Every tick the Sprint Function is run CLIENTSIDE ONLY
 
 
-function FatigueMVision() 
+function StaminaMVision() 
 	local ply = LocalPlayer() 
-	if not ply.FatigueVision then 
-		ply.FatigueVision = 1 
+	if not ply.StaminaVision then 
+		ply.StaminaVision = 1 
 	end 
 	
-	local Vis = ply.FatigueVision 
-	if ply:Fatigue() <= 16 and Vis > 0.3 then 
-		ply.FatigueVision = math.Clamp(ply.FatigueVision - RealFrameTime()*1,0.3,1) 
-	elseif ply:Fatigue() > 0 and Vis < 1 then 
-		ply.FatigueVision = math.Clamp(ply.FatigueVision + RealFrameTime()*1,0.3,1) 
+	local Vis = ply.StaminaVision 
+	if ply:Stamina() <= 16 and Vis > 0.3 then 
+		ply.StaminaVision = math.Clamp(ply.StaminaVision - RealFrameTime()*1,0.3,1) 
+	elseif ply:Stamina() > 0 and Vis < 1 then 
+		ply.StaminaVision = math.Clamp(ply.StaminaVision + RealFrameTime()*1,0.3,1) 
 	end 
-	local Vis = ply.FatigueVision 
+	local Vis = ply.StaminaVision 
 	local COLT = {} 
 	COLT[ "$pp_colour_addr" ] = 0 
 	COLT[ "$pp_colour_addg" ] = 0 
@@ -60,4 +60,4 @@ function FatigueMVision()
 	end 
 end 
 
-hook.Add("RenderScreenspaceEffects","FatigueMVisionHook",FatigueMVision)
+hook.Add("RenderScreenspaceEffects","StaminaMVisionHook",StaminaMVision)

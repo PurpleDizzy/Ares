@@ -70,6 +70,10 @@ function GM:PlayerBindPress(ply, bind, pressed)
 		if ply:KeyDown(IN_SPEED) then return true end -- Prevents player from Sprinting then ADS
 		
 		return false
+	elseif bind == "+jump" and pressed then
+		if ply:OnGround() then ply:SetStamina(ply:Stamina() - 5) end
+	
+		return false
 	end
 end
 
@@ -82,14 +86,7 @@ function GM:KeyPress( ply, key )
 
 	if not IsFirstTimePredicted() then return end
 	if not IsValid(ply) then return end
-	/*
-	if key == IN_SPEED then
-		//ply:SetNWBool("SprintBool", true)
-		net.Start("SprintBool")
-			net.WriteString("true")
-		net.SendToServer()
-	end
-*/
+
 end
 
 

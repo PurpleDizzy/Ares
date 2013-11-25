@@ -16,6 +16,7 @@ SWEP.Primary.Cone = .04
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.DefaultClip = 30
 SWEP.Primary.ClipMax = 60
+SWEP.Primary.NumShots = 1
 
 SWEP.ViewModelFlip = true
 SWEP.ViewModelFOV = 75

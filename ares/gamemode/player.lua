@@ -122,8 +122,12 @@ net.Receive("weaponSelect", function(len, ply)
 	ply:SelectWeapon(net.ReadString())
 end)
 
-util.AddNetworkString("RunSpeed")
+util.AddNetworkString("DoSprint")
 
-net.Receive("RunSpeed", function(len, ply)
-	ply:SetRunSpeed(net.ReadString())
+net.Receive("DoSprint", function(len, ply)
+	if net.ReadBit() == true then
+		ply:SetRunSpeed(230) -- Doesn't seem to make a difference for whatever reason
+	else
+		ply:SetRunSpeed(300)
+	end
 end)

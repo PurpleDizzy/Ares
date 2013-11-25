@@ -8,8 +8,7 @@ function EFFECT:Init(data)
 
 	self.Emitter 		= ParticleEmitter( self.Pos )	// Emitter must be there so you don't get an error			//
 	
-	print(self.Radius)
- 
+	 
 	if self.Radius == 2 or self.Radius == 3 or self.Radius == 7 or self.Radius == 8 or self.Radius == 66 then
 		self:Metal()
 	elseif self.Radius == 39 then

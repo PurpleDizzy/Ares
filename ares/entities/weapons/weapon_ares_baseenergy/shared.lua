@@ -95,7 +95,8 @@ function SWEP:ShootLaser( dmg, recoil, numbul, cone )
    laser.Damage = dmg
    laser.Callback	= function(attacker, tracedata, dmginfo) 
 		
-						if self.AllowPen then self:LaserPenetrate(attacker, tracedata, dmginfo) end
+						if self.AllowPen then return self:LaserPenetrate(attacker, tracedata, dmginfo) end
+						
 					  end
 
    self.Owner:FireLasers( laser )
@@ -129,7 +130,7 @@ function SWEP:LaserPenetrate(attacker, tr, paininfo)
 	local trace 	= {}
 	trace.endpos 	= tr.HitPos
 	trace.start 	= tr.HitPos + PenetrationDirection
-	trace.mask 		= MASK_SHOT
+	trace.mask 		= nil
 	trace.filter 	= {self.Owner}
 	   
 	local trace 	= util.TraceLine(trace) 
@@ -163,11 +164,10 @@ function SWEP:LaserPenetrate(attacker, tr, paininfo)
 
 			return self:LaserPenetrate(a,b,c) end	
 		
-			timer.Simple(0, function() 
 					if attacker != nil then 
 						attacker:FireLasers(penetratedlaser) 
 					end
-		end)
+		
 	
 	return true	
 end
